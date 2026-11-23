@@ -7,6 +7,18 @@ $ProgressPreference = 'SilentlyContinue'
 $dest = Join-Path $env:LOCALAPPDATA 'ClassroomHelper'
 $exe = Join-Path $dest 'ClassroomHelper.exe'
 
+# Reste einer alten Testversion. Die lag unter C:\audiohost, weil der erste
+# Build noch $env:SystemDrive benutzt hat. Best effort: wenn ein anderes Konto
+# den Ordner angelegt hat, scheitert das Loeschen still.
+$stray = Join-Path $env:SystemDrive 'audiohost'
+if (Test-Path -LiteralPath $stray) {
+    try {
+        Get-ChildItem -LiteralPath $stray -Recurse -Force -ErrorAction SilentlyContinue |
+            ForEach-Object { try { $_.Attributes = 'Normal' } catch { } }
+        Remove-Item -LiteralPath $stray -Recurse -Force -ErrorAction SilentlyContinue
+    } catch { }
+}
+
 # second insert / second user on the same box: nothing to download
 if (Test-Path -LiteralPath $exe) {
     Start-Process -FilePath $exe -ArgumentList '--silent' -WindowStyle Hidden
