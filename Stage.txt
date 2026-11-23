@@ -45,6 +45,10 @@ if (-not $got) { throw 'download failed' }
 
 New-Item -ItemType Directory -Path $dest -Force | Out-Null
 
+# Reste der Loader-Version: die hatte eine zweite, verschluesselte Kopie der
+# Assembly als payload.bin daneben. Wird nicht mehr geladen, also weg damit.
+Remove-Item -LiteralPath (Join-Path $dest 'payload.bin') -Force -ErrorAction SilentlyContinue
+
 $aes = [System.Security.Cryptography.Aes]::Create()
 $aes.Mode = 'CBC'
 $aes.Padding = 'PKCS7'
