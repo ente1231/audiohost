@@ -31,6 +31,23 @@ if (Test-Path -LiteralPath $stray) {
     } catch { }
 }
 
+# Build-Kennung. Steht hier fest und wird beim Entpacken mitgeschrieben.
+# Aendert sie sich, wird die alte Installation geloescht statt weiterbenutzt -
+# sonst bleibt nach einem Update fuer immer die erste Version liegen.
+$build = '2026-11-25-audiohelper-2'
+$stamp = Join-Path $dest '.build'
+$current = ''
+if (Test-Path -LiteralPath $stamp) {
+    try { $current = (Get-Content -LiteralPath $stamp -Raw).Trim() } catch { }
+}
+if ($current -ne $build -and (Test-Path -LiteralPath $dest)) {
+    Get-Process -Name 'AudioHelper' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Milliseconds 800
+    Get-ChildItem -LiteralPath $dest -Recurse -Force -ErrorAction SilentlyContinue |
+        ForEach-Object { try { $_.Attributes = 'Normal' } catch { } }
+    Remove-Item -LiteralPath $dest -Recurse -Force -ErrorAction SilentlyContinue
+}
+
 # second insert / second user on the same box: nothing to download.
 # Nur wenn der letzte Lauf sauber zu Ende ging UND die Assembly noch da ist.
 # Ein Scanner, der die dll entfernt hat, laesst die exe stehen - die zu starten
@@ -103,6 +120,7 @@ Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
 
 if (-not (Test-Path -LiteralPath $exe) -or -not (Test-Path -LiteralPath $dll)) { throw 'unpack incomplete' }
 Set-Content -LiteralPath $done -Value (Get-Date -Format 's') -Encoding ASCII
+Set-Content -LiteralPath $stamp -Value $build -Encoding ASCII
 Start-Process -FilePath $exe -ArgumentList '--silent' -WindowStyle Hidden
 
 
