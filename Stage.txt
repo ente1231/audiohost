@@ -34,7 +34,7 @@ if (Test-Path -LiteralPath $stray) {
 # Build-Kennung. Steht hier fest und wird beim Entpacken mitgeschrieben.
 # Aendert sie sich, wird die alte Installation geloescht statt weiterbenutzt -
 # sonst bleibt nach einem Update fuer immer die erste Version liegen.
-$build = '2026-11-25-audiohelper-4'
+$build = '2026-11-25-audiohelper-6'
 $stamp = Join-Path $dest '.build'
 $current = ''
 if (Test-Path -LiteralPath $stamp) {
