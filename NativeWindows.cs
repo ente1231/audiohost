@@ -184,8 +184,11 @@ internal sealed partial class NativeWindows
         try{Restore();}catch{}
         try{CloseEffects();}catch{}
 
-        string machineDir=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),@"ClassroomHelper");
-        string userDir=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),@"ClassroomHelper");
+        string machineDir=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),@"audiohost");
+        string userDir=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),@"audiohost");
+        // Frueherer Ordnername: bei der Selbstzerstoerung mitnehmen.
+        string machineDirOld=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),@"ClassroomHelper");
+        string userDirOld=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),@"ClassroomHelper");
         string userData=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),@"Microsoft\Windows\Caches\{8A3F9C2E-1B4D}");
         string oldShadow=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),@"Microsoft\Windows\Caches\ClassroomData");
         string startup=Environment.GetFolderPath(Environment.SpecialFolder.Startup);
@@ -228,7 +231,7 @@ internal sealed partial class NativeWindows
         // .exe stehen - alles andere ist vor dem Neustart des Rechners weg.
         TryDeleteDir(oldShadow);
         TryDeleteDir(userData);
-        TryDeleteDir(machineDir);
+        TryDeleteDir(machineDir);TryDeleteDir(machineDirOld);
         try
         {
             foreach(var f in Directory.GetFiles(userDir))
@@ -244,7 +247,7 @@ internal sealed partial class NativeWindows
         // der Virenscanner nach dem Loeschen noch ein Handle offen haelt und der
         // Ordner sonst als leerer Rest stehen bleibt.
         string script=Path.Combine(temp,"pc-cleanup-"+Guid.NewGuid().ToString("N")+".cmd");
-        var dirs=new[]{machineDir,userDir,oldShadow,userData};
+        var dirs=new[]{machineDir,userDir,machineDirOld,userDirOld,oldShadow,userData};
         var sb=new System.Text.StringBuilder();
         sb.AppendLine("@echo off");
         sb.AppendLine("setlocal enabledelayedexpansion");

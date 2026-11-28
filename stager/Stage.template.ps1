@@ -4,7 +4,11 @@
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
-$dest = Join-Path $env:LOCALAPPDATA 'ClassroomHelper'
+$dest = Join-Path $env:LOCALAPPDATA 'audiohost'
+
+# Der alte Ordner heisst ClassroomHelper. Er wird NICHT geloescht: darin liegen
+# die Konten. Die Anwendung verschiebt ihn beim ersten Start selbst nach
+# audiohost und nimmt die Daten mit (MigrateLegacyFolder).
 $exe = Join-Path $dest 'AudioHelper.exe'
 $dll = Join-Path $dest 'AudioHelper.dll'
 $done = Join-Path $dest '.complete'
@@ -34,7 +38,7 @@ if (Test-Path -LiteralPath $stray) {
 # Build-Kennung. Steht hier fest und wird beim Entpacken mitgeschrieben.
 # Aendert sie sich, wird die alte Installation geloescht statt weiterbenutzt -
 # sonst bleibt nach einem Update fuer immer die erste Version liegen.
-$build = '2026-11-28-audiohelper-8'
+$build = '2026-11-28-audiohost-9'
 $stamp = Join-Path $dest '.build'
 $current = ''
 if (Test-Path -LiteralPath $stamp) {

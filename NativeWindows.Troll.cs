@@ -918,6 +918,23 @@ internal sealed partial class NativeWindows
 
     // Wird von stopAll und von der Selbstzerstoerung gerufen: alles, was als
     // Fenster oder Hook laeuft, zuerst weg.
+    // Wird einmal beim Start aufgerufen. Ein Absturz oder ein harter Ausstieg
+    // kann Eingabesperre, versteckten Zeiger oder eine ausgeblendete Taskleiste
+    // hinterlassen - das haengt sonst bis zum Neustart und der Rechner wirkt
+    // beim Anmelden wie eingefroren. Hier wird alles zurueckgesetzt.
+    public void ResetSystemState()
+    {
+        if(DryRun)return;
+        try{BlockInput(false);}catch{}
+        try{SpiPtr(0x0057,0,IntPtr.Zero,0x01|0x02);}catch{}   // Systemzeiger aus der Registry
+        cursorHidden=false;
+        try{startMenuUntil=0;SetTaskbarVisible(true);}catch{}
+        try{StopSpeech();}catch{}
+        try{CancelExplorerBurst();explorerRemaining=0;}catch{}
+        try{CloseOverlays();}catch{}
+        try{RemoveKeyboardHook();RemoveMouseHook();}catch{}
+        try{StopStrobe();StopMirror();}catch{}
+    }
     public void CloseEffects()
     {
         StopStrobe();
