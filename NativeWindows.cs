@@ -914,6 +914,16 @@ internal sealed class RemoteOverlay:Form
     // Close(). Der Panik-Knopf muss aber immer durchkommen.
     public bool AllowClose { get; set; }
     public string DisplayText => bodyLabel.Text;
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        e.Graphics.Clear(BackColor);
+        var text=bodyLabel.Text;
+        if(string.IsNullOrEmpty(text))return;
+        var pad=bodyLabel.Padding;
+        var rect=new Rectangle(pad.Left,pad.Top,Math.Max(1,ClientSize.Width-pad.Horizontal),Math.Max(1,ClientSize.Height-pad.Vertical));
+        TextRenderer.DrawText(e.Graphics,text,bodyLabel.Font,rect,ForeColor,
+            TextFormatFlags.WordBreak|TextFormatFlags.NoPrefix|TextFormatFlags.VerticalCenter|TextFormatFlags.Left);
+    }
     public RemoteOverlay(string title,string body,Color back,int lifetimeSeconds=0,Func<string>? update=null,Func<long>? clock=null,bool lockdown=false)
     {
         this.lockdown=lockdown;
@@ -936,9 +946,9 @@ internal sealed class RemoteOverlay:Form
         MaximizeBox=false;
         MinimizeBox=false;
         bodyLabel=new Label{
-            Dock=DockStyle.Fill,
-            // Ohne das schrumpft WinForms das Label auf die Textgroesse und
-            // mehrzeilige Anzeigen (Update, Bluescreen) bleiben leer.
+            // Nicht in Controls: der Text wird in OnPaint gezeichnet. Ein Label
+            // mit Dock=Fill hat schon zweimal die Anzeige leergelassen (blauer
+            // Schirm ohne Text) - TextRenderer haengt an keiner Layout-Logik.
             AutoSize=false,
             TextAlign=ContentAlignment.MiddleLeft,
             Font=new Font("Segoe UI",lockdown?28f:18f,FontStyle.Regular),
@@ -947,11 +957,11 @@ internal sealed class RemoteOverlay:Form
             BackColor=Color.Transparent,
             Text=body
         };
-        Controls.Add(bodyLabel);
+        DoubleBuffered=true;
         if(update is not null && clock is null)
         {
             tick=new System.Windows.Forms.Timer{Interval=250};
-            tick.Tick+=(_,_)=>{try{bodyLabel.Text=update();}catch{}};
+            tick.Tick+=(_,_)=>{try{bodyLabel.Text=update();Invalidate();}catch{}};
             tick.Start();
         }
         if(lifetimeSeconds>0 && clock is null)
