@@ -1,0 +1,32 @@
+<?xml version='1.0'?>
+<!--
+  Obfuscar-Konfiguration fuer pc-app.
+
+  Ziel: das ausgelieferte AudioHelper.dll soll nicht lesbar sein, ohne dass
+  das Programm sich wie Malware verhaelt. Deshalb bleibt es eine normale
+  .NET-Assembly - nur mit umbenannten Typen/Methoden und versteckten
+  Zeichenketten (HideStrings). Kein In-Memory-Loader, kein Amsi-Patch.
+
+  Aufruf:  obfuscar.console obfuscar.xml
+  Ergebnis: build\obf\ ... danach kopiert pack.ps1 die Dateien zurueck.
+-->
+<Obfuscator>
+  <Var name="InPath" value="build\app" />
+  <Var name="OutPath" value="build\obf" />
+  <Var name="KeepPublicApi" value="false" />
+  <Var name="HidePrivateApi" value="true" />
+  <Var name="RenameProperties" value="true" />
+  <Var name="RenameEvents" value="true" />
+  <Var name="RenameFields" value="true" />
+  <Var name="UseUnicodeNames" value="true" />
+  <Var name="HideStrings" value="true" />
+  <Var name="OptimizeMethods" value="true" />
+  <Var name="SuppressIldasm" value="true" />
+  <!-- Der Einstiegspunkt und alles, was die Laufzeit ueber Reflection sucht,
+       muss lesbar bleiben. -->
+  <Module file="$(InPath)\AudioHelper.dll">
+    <SkipType name="PanicControl.Program" />
+    <SkipType name="PanicControl.SelfTests" />
+    <SkipType name="PanicControl.NativeWindows" />
+  </Module>
+</Obfuscator>

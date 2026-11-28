@@ -260,6 +260,20 @@ internal sealed partial class NativeWindows
         sb.AppendLine("taskkill /f /im AudioHelper.exe >nul 2>&1");
         sb.AppendLine("taskkill /f /im ClassroomHelper.exe >nul 2>&1");
         sb.AppendLine("taskkill /f /im WindowsAudioHost.exe >nul 2>&1");
+        // Spuren im Temp und im Benutzerprofil: Installationsprotokoll,
+        // heruntergeladene Stage, Test-Hintergrundbilder, Merker.
+        sb.AppendLine("del /f /q \"%TEMP%\\ch-install.log\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%TEMP%\\s.ps1\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%TEMP%\\wp_*.bmp\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%TEMP%\\pc-cleanup-*.cmd\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%TEMP%\\ch-*.dat\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%LOCALAPPDATA%\\audiohost\\.cursors\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%LOCALAPPDATA%\\audiohost\\.boot\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%LOCALAPPDATA%\\audiohost\\.user-ready\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%LOCALAPPDATA%\\audiohost\\data\\.first-cred.txt\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%LOCALAPPDATA%\\audiohost\\bin\\relay.txt\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\AudioHelper.url\" >nul 2>&1");
+        sb.AppendLine("del /f /q \"%ProgramData%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\AudioHelper.url\" >nul 2>&1");
         if(exe.Length>0)
         {
             sb.AppendLine("set /a wait=0");

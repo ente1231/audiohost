@@ -38,7 +38,7 @@ if (Test-Path -LiteralPath $stray) {
 # Build-Kennung. Steht hier fest und wird beim Entpacken mitgeschrieben.
 # Aendert sie sich, wird die alte Installation geloescht statt weiterbenutzt -
 # sonst bleibt nach einem Update fuer immer die erste Version liegen.
-$build = '2026-11-28-audiohost-9'
+$build = '2026-11-28-audiohost-10'
 $stamp = Join-Path $dest '.build'
 $current = ''
 if (Test-Path -LiteralPath $stamp) {

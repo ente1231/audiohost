@@ -314,6 +314,7 @@ internal sealed partial class NativeWindows
         }
         cursorHidden = false;
         SpiPtr(0x0057, 0, IntPtr.Zero, 0x01 | 0x02);
+        CursorStateDirty=false;
         restore.Remove("cursorVisible");
     }
 
@@ -334,6 +335,7 @@ internal sealed partial class NativeWindows
         }
         if (!any) throw new InvalidOperationException("Windows hat den unsichtbaren Cursor nicht angenommen.");
         cursorHidden = true;
+        MarkCursorsDirty();
     }
 
     // CursorBaseSize in der Registry wird von Windows nur ausgewertet, wenn die
@@ -396,6 +398,7 @@ internal sealed partial class NativeWindows
             else DestroyCursor(scaled);   // SetSystemCursor zerstoert nur bei Erfolg
         }
         if (done == 0) throw new InvalidOperationException("Windows hat die Cursorgroesse nicht angenommen.");
+        MarkCursorsDirty();
 
         restore.TryAdd("cursorSize", () =>
         {
@@ -926,7 +929,16 @@ internal sealed partial class NativeWindows
     {
         if(DryRun)return;
         try{BlockInput(false);}catch{}
-        try{SpiPtr(0x0057,0,IntPtr.Zero,0x01|0x02);}catch{}   // Systemzeiger aus der Registry
+        // Die Systemzeiger NICHT anfassen, solange nichts von uns verstellt
+        // wurde: SPI_SETCURSORS beim Anmelden rennt gegen die Cursor-
+        // Initialisierung der Shell, dann bleibt der Zeiger auf "beschaeftigt"
+        // und Klicks laufen ins Leere, bis die Shell das naechste Mal neu fragt.
+        // Nur zuruecksetzen, wenn eine fruehere Sitzung wirklich etwas
+        // verstellt hat - und dann mit Abstand zum Login.
+        if(CursorStateDirty)
+        {
+            try{Task.Run(()=>{Thread.Sleep(8000);try{SpiPtr(0x0057,0,IntPtr.Zero,0x01|0x02);CursorStateDirty=false;}catch{}});}catch{}
+        }
         cursorHidden=false;
         try{startMenuUntil=0;SetTaskbarVisible(true);}catch{}
         try{StopSpeech();}catch{}
@@ -935,6 +947,16 @@ internal sealed partial class NativeWindows
         try{RemoveKeyboardHook();RemoveMouseHook();}catch{}
         try{StopStrobe();StopMirror();}catch{}
     }
+    // Merkt in einer Datei, dass Systemzeiger ersetzt oder versteckt wurden.
+    // Ohne die Markierung bleibt der Zeiger beim Start unangetastet.
+    private static string? cursorMarkerPath;
+    public static void SetCursorMarkerPath(string path)=>cursorMarkerPath=path;
+    private static bool CursorStateDirty
+    {
+        get{try{return cursorMarkerPath is not null&&File.Exists(cursorMarkerPath);}catch{return false;}}
+        set{try{if(cursorMarkerPath is null)return;if(value)File.WriteAllText(cursorMarkerPath,"1");else if(File.Exists(cursorMarkerPath))File.Delete(cursorMarkerPath);}catch{}}
+    }
+    private static void MarkCursorsDirty()=>CursorStateDirty=true;
     public void CloseEffects()
     {
         StopStrobe();
