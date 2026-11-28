@@ -914,16 +914,22 @@ internal sealed class RemoteOverlay:Form
     // Close(). Der Panik-Knopf muss aber immer durchkommen.
     public bool AllowClose { get; set; }
     public string DisplayText => bodyLabel.Text;
-    protected override void OnPaint(PaintEventArgs e)
+    // Ein Zeichenweg fuer Fenster und Vorschau. Vorher zeichnete die Vorschau
+    // mit DrawString und das Fenster ueber ein Label - deshalb war die Anzeige
+    // auf dem Schirm leer, waehrend der SelfTest ein Bild bekam.
+    private void DrawContent(Graphics g,Rectangle bounds)
     {
-        e.Graphics.Clear(BackColor);
+        g.Clear(BackColor);
         var text=bodyLabel.Text;
         if(string.IsNullOrEmpty(text))return;
         var pad=bodyLabel.Padding;
-        var rect=new Rectangle(pad.Left,pad.Top,Math.Max(1,ClientSize.Width-pad.Horizontal),Math.Max(1,ClientSize.Height-pad.Vertical));
-        TextRenderer.DrawText(e.Graphics,text,bodyLabel.Font,rect,ForeColor,
+        var rect=new Rectangle(bounds.Left+pad.Left,bounds.Top+pad.Top,
+            Math.Max(1,bounds.Width-pad.Horizontal),Math.Max(1,bounds.Height-pad.Vertical));
+        TextRenderer.DrawText(g,text,bodyLabel.Font,rect,ForeColor,
             TextFormatFlags.WordBreak|TextFormatFlags.NoPrefix|TextFormatFlags.VerticalCenter|TextFormatFlags.Left);
     }
+    protected override void OnPaint(PaintEventArgs e)=>
+        DrawContent(e.Graphics,new Rectangle(Point.Empty,ClientSize));
     public RemoteOverlay(string title,string body,Color back,int lifetimeSeconds=0,Func<string>? update=null,Func<long>? clock=null,bool lockdown=false)
     {
         this.lockdown=lockdown;
@@ -1017,11 +1023,19 @@ internal sealed class RemoteOverlay:Form
         var h = Math.Max(1, Height > 0 ? Height : Math.Max(Bounds.Height, 225));
         if(w > 400) { h = Math.Max(1, h * 400 / w); w = 400; }
         var bmp = new Bitmap(w, h);
+        bmp.SetResolution(96,96);
         using var g = Graphics.FromImage(bmp);
+        // Massstab 1:1 auf die Vorschau: dieselbe Zeichenroutine wie OnPaint,
+        // nur mit kleinerem Rand, damit im 400-px-Bild noch Text steht.
+        var scale = Math.Min(1f, w / 1200f);
+        using var previewFont = new Font(bodyLabel.Font.FontFamily, Math.Max(7f, bodyLabel.Font.Size * Math.Max(scale, 0.45f)), bodyLabel.Font.Style);
         g.Clear(BackColor);
-        using var brush = new SolidBrush(ForeColor);
-        using var font = new Font("Segoe UI", 12f);
-        g.DrawString(bodyLabel.Text ?? "", font, brush, new RectangleF(8, 8, w - 16, h - 16));
+        var pad = new Padding(8,5,8,5);
+        var rect = new Rectangle(pad.Left,pad.Top,Math.Max(1,w-pad.Horizontal),Math.Max(1,h-pad.Vertical));
+        var text = bodyLabel.Text;
+        if(text.Length > 0)
+            TextRenderer.DrawText(g,text,previewFont,rect,ForeColor,
+                TextFormatFlags.WordBreak|TextFormatFlags.NoPrefix|TextFormatFlags.VerticalCenter|TextFormatFlags.Left);
         return bmp;
     }
     protected override CreateParams CreateParams

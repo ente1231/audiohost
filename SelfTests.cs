@@ -71,6 +71,17 @@ internal static class SelfTests
         Command(new{cmd="admin",op="setPerms",user="testadmin",perms=state.PermissionsFor(state.Actions.Where(a=>a.Id!="screenBlank").Select(a=>a.Id).ToArray())});Check(!state.Native.ActiveOverlays.Contains("screenBlank"),"Rights revocation closes owned overlay");
         using(var full=new RemoteOverlay("Test","Fullscreen",Color.Navy))
         {Check(full.TopMost&&full.FormBorderStyle==FormBorderStyle.None&&full.Bounds==Screen.PrimaryScreen!.Bounds,"Shared overlays are topmost borderless full-screen");using var picture=full.RenderPreview();picture.Save(Path.Combine(folder,"fullscreen-layout.png"));}
+        // Regression: die Vollbild-Anzeige war auf dem Schirm blau ohne Text,
+        // weil das Fenster ein Label zeichnete und die Vorschau DrawString nutzte.
+        // Gezaehlt wird, wie viele Pixel nicht der Hintergrundfarbe entsprechen.
+        using(var update=new RemoteOverlay("","Wird vorbereitet\n\n\n\nBitte den PC nicht ausschalten. Das dauert eine Weile.\n\n\n1% abgeschlossen\n\nDer PC wird mehrmals neu gestartet.",Color.FromArgb(0,120,215)))
+        {
+            using var shot=update.RenderPreview();
+            var back=Color.FromArgb(0,120,215).ToArgb();int ink=0;
+            for(int y=0;y<shot.Height;y++)for(int x=0;x<shot.Width;x++)if(shot.GetPixel(x,y).ToArgb()!=back)ink++;
+            Check(ink>150,"Fake-Update overlay renders text ("+ink+" pixels)");
+            shot.Save(Path.Combine(folder,"fake-update.png"));
+        }
         var network=new LanAddress(IPAddress.Parse("192.168.1.20"),24,"test");Check(network.Allows(IPAddress.Parse("192.168.1.99")),"Same subnet allowed");Check(network.Allows(IPAddress.Loopback),"Loopback allowed");Check(!network.Allows(IPAddress.Parse("192.168.2.9")),"Other subnet blocked");Check(!network.Allows(IPAddress.Parse("8.8.8.8")),"Public IP blocked");
         Check(Marshal.SizeOf<NativeWindows.Input>()==(Environment.Is64BitProcess?40:28),"Correct native INPUT layout");
         NativeWindows.ProbeSettings();
