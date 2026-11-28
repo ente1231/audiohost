@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="theme-color" content="#090e19">
+<title>Panic Control · PC</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+
+<!-- ===== LOGIN OVERLAY ===== -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <div class="logo">PB</div>
+    <h1>Anmelden</h1>
+    <div class="field-label">Benutzername</div>
+    <input type="text" class="text-input" id="login-user" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="admin">
+    <div class="field-label">Passwort</div>
+    <input type="password" class="text-input" id="login-pass" autocomplete="current-password" placeholder="Passwort">
+    <div class="login-err" id="login-err"></div>
+    <button class="btn primary" id="login-btn" style="font-size:16px;padding:16px;">Anmelden</button>
+  </div>
+</div>
+
+<div class="container hidden" id="app">
+  <div class="header">
+    <button class="logout-btn hidden" id="logout-btn">Abmelden</button>
+    <div class="logo">PB</div>
+    <h1>PC Panic Button</h1>
+    <div class="status"><span class="dot"></span><span id="ws-status">Verbunden</span></div>
+    <div class="whoami" id="whoami"></div>
+    <div class="online-bar hidden" id="online-bar"></div>
+  </div>
+
+  <div class="quick-strip"><button class="btn blue" data-action="virtDesktop" data-confirm="1"><span>＋ Neuer Desktop</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="desktopPrev" data-confirm="1"><span>← Desktop</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="mediaMute" data-confirm="1"><span>♫ Stumm</span><span class="counter" style="display:none"></span></button></div><div class="tabs">
+    <div class="tab active" data-tab="quick">Quick</div>
+    <div class="tab" data-tab="maus">Maus</div>
+    <div class="tab" data-tab="tastatur">Tastatur</div>
+    <div class="tab" data-tab="system">System</div>
+    <div class="tab" data-tab="windows">Windows</div>
+    <div class="tab" data-tab="browser">Browser</div>
+    <div class="tab" data-tab="extras">Extras</div><div class="tab admin" data-tab="admin" id="tab-btn-admin">Admin</div>
+  </div>
+
+  <!-- ===== QUICK ===== -->
+  <div class="tab-content active" id="tab-quick">
+    <div class="card">
+      <div class="card-title">Schnellzugriff</div>
+      <button class="btn primary" data-action="lock" data-confirm="3" data-perm="lock">
+        <span class="counter" style="display:none">0/3</span>Bildschirm sperren</button>
+      <div class="panic-info">3x druecken zur Bestaetigung</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Mehr Aktionen</div>
+      <button class="btn warn"   data-action="desktop"  data-confirm="3" data-perm="desktop"><span class="counter" style="display:none">0/3</span>Desktop zeigen (alles minimieren)</button>
+      <button class="btn blue"   data-action="sleep"    data-confirm="3" data-perm="sleep"><span class="counter" style="display:none">0/3</span>Schlafmodus</button>
+      <button class="btn danger" data-action="shutdown" data-confirm="3" data-perm="shutdown"><span class="counter" style="display:none">0/3</span>Herunterfahren</button>
+    </div>
+    <div class="card">
+      <div class="card-title">System</div>
+      <button class="btn" data-action="ping" data-confirm="1"><span class="counter" style="display:none">0/1</span>Verbindung testen</button>
+    </div>
+  </div>
+
+  <!-- ===== MAUS ===== -->
+  <div class="tab-content" id="tab-maus">
+    <div class="card" id="card-live-mouse">
+      <div class="card-title">Live-Touchpad</div>
+      <div id="mouse-pad" class="mouse-pad" data-action="mouseMove" role="group" aria-label="Touchpad: Finger ziehen bewegt die PC-Maus">
+        <strong>Maus steuern</strong><span id="mouse-pad-status">Finger hier bewegen</span>
+      </div>
+      <div class="mouse-clicks">
+        <button class="btn blue" data-action="mouseLeft">Linksklick</button>
+        <button class="btn" data-action="mouseMiddle">Mittelklick</button>
+        <button class="btn blue" data-action="mouseRight">Rechtsklick</button>
+      </div>
+      <button class="btn blue" data-action="mouseDouble">Doppelklick</button>
+      <div class="btn-row">
+        <button class="btn" data-action="scrollUp">&#8593; Hochscrollen</button>
+        <button class="btn" data-action="scrollDown">&#8595; Runterscrollen</button>
+      </div>
+      <p class="panic-info">Ziehen bewegt die Maus. Klicken mit den Tasten darunter.<br>Cooldown beim Touchpad: pro neuer Beruehrung, nicht pro Bewegung.</p>
+    </div>
+    <div class="card" data-perm="mouse">
+      <div class="card-title">Maus-Trolls (Sofort-Effekt)</div>
+      <div class="toggle-row"><div class="label"><span class="ico">&larr;</span>Driftet links</div><div class="toggle" data-toggle="driftLeft"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">&rarr;</span>Driftet rechts</div><div class="toggle" data-toggle="driftRight"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">&uarr;</span>Driftet hoch</div><div class="toggle" data-toggle="driftUp"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">&darr;</span>Driftet runter</div><div class="toggle" data-toggle="driftDown"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">~</span>Zittern (Jitter)</div><div class="toggle" data-toggle="jitter"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">*</span>Random Teleport</div><div class="toggle" data-toggle="teleport"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">O</span>Kreis-Bewegung</div><div class="toggle" data-toggle="circle"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">#</span>Auto-Klick (alle 5s)</div><div class="toggle" data-toggle="autoClick"></div></div>
+    </div>
+    <div class="card" data-perm="mouse">
+      <div class="card-title">Spezial-Bewegungen</div>
+      <div class="toggle-row"><div class="label"><span class="ico">&#8618;</span>Maus-Bungee (zieht zurueck)</div><div class="toggle" data-toggle="bungee"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">&#10530;</span>Labyrinth (nur diagonal)</div><div class="toggle" data-toggle="labyrinth"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">&#8645;</span>Scroll-Rad (zufaellig)</div><div class="toggle" data-toggle="scrollWheel"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">&#8635;</span>Klick-Boomerang (weicht aus)</div><div class="toggle" data-toggle="boomerang"></div></div>
+    </div>
+    <div class="card" id="card-intensity">
+      <div class="card-title">Intensitaet</div>
+      <div class="slider-row"><div class="label"><span>Drift-Staerke</span><span id="drift-val">3</span></div><input type="range" class="slider" min="1" max="10" value="3" id="drift-slider"></div>
+      <div class="slider-row"><div class="label"><span>Jitter-Staerke</span><span id="jitter-val">5</span></div><input type="range" class="slider" min="1" max="20" value="5" id="jitter-slider"></div>
+    </div>
+    <div class="card" data-perm="mouse">
+      <button class="btn danger" data-action="stopAll" data-confirm="1" data-perm="mouse"><span class="counter" style="display:none">0/1</span>Alle Effekte stoppen (Panik-Knopf)</button>
+    </div>
+    <div class="card" data-perm="registry">
+      <div class="card-title">Maus-Einstellungen (Registry)</div>
+      <div class="card-hint">Aendert echte Windows-Einstellungen. Wirkt ggf. erst nach Ab-/Anmeldung.</div>
+      <button class="btn purple" data-action="mouseSpeedMin" data-confirm="3" data-perm="registry"><span class="counter" style="display:none">0/3</span>Mausgeschwindigkeit auf Minimum</button>
+      <button class="btn green" data-action="mouseSpeedNormal" data-confirm="1" data-perm="registry"><span class="counter" style="display:none">0/1</span>&#8617; Mausgeschwindigkeit normal</button>
+      <button class="btn purple" data-action="swapButtons"   data-confirm="3" data-perm="registry"><span class="counter" style="display:none">0/3</span>Maustasten vertauschen</button>
+      <button class="btn green" data-action="swapButtonsOff" data-confirm="1" data-perm="registry"><span class="counter" style="display:none">0/1</span>&#8617; Maustasten zuruecktauschen</button>
+    </div>
+  </div>
+
+  <!-- ===== TASTATUR ===== -->
+  <div class="tab-content" id="tab-tastatur">
+    <div class="card" data-perm="type">
+      <div class="card-title">Custom Text tippen</div>
+      <input type="text" class="text-input" id="custom-text" placeholder="z.B. Hallo Welt!">
+      <button class="btn green" data-action="typeText" data-confirm="1" data-perm="type"><span class="counter" style="display:none">0/1</span>Text senden</button>
+    </div>
+    <div class="card" data-perm="type">
+      <div class="card-title">Creepy-Nachricht</div>
+      <input type="text" class="text-input" id="isee-text" value="Ich sehe dich" placeholder="Nachricht">
+      <button class="btn warn" data-action="iSeeYou" data-confirm="1" data-perm="type"><span class="counter" style="display:none">0/1</span>Nachricht tippen</button>
+    </div>
+    <div class="card" data-perm="type">
+      <div class="card-title">Tastatur-Streiche</div>
+      <button class="btn warn" data-action="layoutSwap"  data-confirm="1" data-perm="type"><span class="counter" style="display:none">0/1</span>Tastatur-Layout wechseln (Y/Z)</button>
+      <button class="btn warn" data-action="overwrite"   data-confirm="1" data-perm="type"><span class="counter" style="display:none">0/1</span>Ueberschreib-Modus (Einfg)</button>
+      <button class="btn warn" data-action="doubleSpace" data-confirm="1" data-perm="type"><span class="counter" style="display:none">0/1</span>Doppel-Leerzeichen</button>
+      <button class="btn warn" data-action="corruptor"   data-confirm="1" data-perm="type"><span class="counter" style="display:none">0/1</span>Text-Korruptor (Sonderzeichen)</button>
+    </div>
+    <div class="card" data-perm="fun">
+      <div class="card-title">Spass-Funktionen</div>
+      <button class="btn warn" data-action="capsToggle" data-confirm="1" data-perm="fun"><span class="counter" style="display:none">0/1</span>Caps Lock umschalten</button>
+      <button class="btn warn" data-action="randomKey"  data-confirm="1" data-perm="fun"><span class="counter" style="display:none">0/1</span>Zufaellige Taste tippen</button>
+      <button class="btn warn" data-action="altF4"      data-confirm="3" data-perm="fun"><span class="counter" style="display:none">0/3</span>Fenster schliessen (Alt+F4)</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Tasten-Befehle</div>
+      <button class="btn blue" data-action="save"           data-confirm="1"><span class="counter" style="display:none">0/1</span>Speichern (Strg+S)</button>
+      <button class="btn blue" data-action="undo"           data-confirm="1"><span class="counter" style="display:none">0/1</span>Rueckgaengig (Strg+Z)</button>
+      <button class="btn warn" data-action="selectAllSpace" data-confirm="3"><span class="counter" style="display:none">0/3</span>Alles markieren + Leerzeichen</button>
+    </div>
+  </div>
+
+  <!-- ===== SYSTEM ===== -->
+  <div class="tab-content" id="tab-system">
+    <div class="card" data-perm="system">
+      <div class="card-title">Erschrecken</div>
+      <button class="btn danger" data-action="fakeBsod" data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Fake Bluescreen (gesperrt)</button>
+      <button class="btn danger" data-action="fakeUpdate" data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Fake Windows-Update</button>
+      <button class="btn danger" data-action="blackout" data-confirm="2" data-perm="system"><span class="counter" style="display:none">0/2</span>Dauer-Blackout</button>
+      <button class="btn warn" data-action="speechLoop" data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Sprach-Schleife (dauerhaft)</button>
+      <button class="btn warn" data-action="hideCursor" data-confirm="2" data-perm="system"><span class="counter" style="display:none">0/2</span>Mauszeiger verstecken</button>
+      <button class="btn green" data-action="showCursor" data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>Mauszeiger wieder zeigen</button>
+      <button class="btn danger" data-action="freezeInput" data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Eingabe einfrieren</button>
+      <button class="btn green" data-action="unfreezeInput" data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>Eingabe wieder freigeben</button>
+      <button class="btn warn" data-action="killExplorer" data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Explorer killen</button>
+      <button class="btn green" data-action="restartExplorer" data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>Explorer neu starten</button>
+      <button class="btn blue" data-action="volumeMax" data-confirm="2" data-perm="system"><span class="counter" style="display:none">0/2</span>Lautstärke max</button>
+      <button class="btn blue" data-action="openCmd" data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>CMD öffnen</button>
+    </div>
+    <div class="card" data-perm="system">
+      <div class="card-title">Bildschirm & Desktop</div>
+      <button class="btn blue" data-action="rotate"      data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Bildschirm drehen (nur Intel-Grafik)</button>
+      <button class="btn blue" data-action="virtDesktop" data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>Neuer leerer Desktop</button>
+      <button class="btn blue" data-action="winPSecond"  data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Nur Zweitbildschirm</button>
+      <button class="btn green" data-action="secondScreenBack" data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>&#8617; Zurueck (beide Bildschirme)</button>
+      <button class="btn blue" data-action="peekDesktop" data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>Desktop kurz zeigen (Win+,)</button>
+      <button class="btn blue" data-action="gfxReset"    data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Grafiktreiber zuruecksetzen</button>
+    </div>
+    <div class="card" data-perm="system">
+      <div class="card-title">Fenster & Prozesse</div>
+      <div class="toggle-row"><div class="label"><span class="ico">&#9707;</span>Fenster-Tanz (Win gehalten, Pfeile)</div><div class="toggle" data-toggle="windowDance"></div></div>
+      <div class="toggle-row"><div class="label"><span class="ico">&#9834;</span>Zufalls-Beep (alle 3-7 Min)</div><div class="toggle" data-toggle="beep"></div></div>
+      <button class="btn warn"   data-action="winELoop"   data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Explorer-Flut (Win+E x10)</button>
+      <p class="card-hint">Strg+Alt+Entf: Windows erlaubt diese Sicherheitskombination keinem normalen PC-Programm. Am PC selbst drücken.</p>
+      <button class="btn warn"   data-action="taskMgr"    data-confirm="3" data-perm="system"><span class="counter" style="display:none">0/3</span>Task-Manager (Strg+Umsch+Esc)</button>
+      <button class="btn warn"   data-action="printDialog" data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>Druckdialog (Strg+P)</button>
+    </div>
+    <div class="card" data-perm="system">
+      <div class="card-title">Gaming / Aufnahme</div>
+      <button class="btn blue" data-action="gameBar"    data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>Game Bar oeffnen (Win+G)</button>
+      <button class="btn blue" data-action="xboxRecord" data-confirm="1" data-perm="system"><span class="counter" style="display:none">0/1</span>Xbox-Aufnahme (Win+Alt+R)</button>
+    </div>
+  </div>
+
+  <!-- ===== WINDOWS-TOOLS / BARRIEREFREIHEIT ===== -->
+  <div class="tab-content" id="tab-windows">
+    <div class="card" data-perm="access">
+      <div class="card-title">Barrierefreiheit-Streiche</div>
+      <button class="btn warn" data-action="stickyKeys" data-confirm="3" data-perm="access"><span class="counter" style="display:none">0/3</span>Sticky Keys aktivieren</button>
+      <button class="btn green" data-action="stickyOff" data-confirm="1" data-perm="access"><span class="counter" style="display:none">0/1</span>&#8617; Sticky Keys aus</button>
+      <button class="btn warn" data-action="filterKeys" data-confirm="3" data-perm="access"><span class="counter" style="display:none">0/3</span>Filter Keys aktivieren</button>
+      <button class="btn green" data-action="filterOff" data-confirm="1" data-perm="access"><span class="counter" style="display:none">0/1</span>&#8617; Filter Keys ausschalten</button>
+      <p class="panic-info">Filter Keys werden direkt über Windows zurückgesetzt.</p>
+      <button class="btn warn" data-action="mouseKeys"  data-confirm="3" data-perm="access"><span class="counter" style="display:none">0/3</span>MouseKeys aktivieren</button>
+      <button class="btn green" data-action="mouseKeysOff" data-confirm="1" data-perm="access"><span class="counter" style="display:none">0/1</span>&#8617; MouseKeys aus</button>
+      <button class="btn warn" data-action="narrator"   data-confirm="3" data-perm="access"><span class="counter" style="display:none">0/3</span>Sprachausgabe an/aus (Win+Strg+Enter)</button>
+      <button class="btn warn" data-action="highContrast" data-confirm="3"><span class="counter" style="display:none">0/3</span>Hoher Kontrast an/aus (Alt+Umsch+Druck)</button>
+    </div>
+    <div class="card" data-perm="access">
+      <div class="card-title">Werkzeuge einblenden</div>
+      <button class="btn blue" data-action="osk"         data-confirm="1" data-perm="access"><span class="counter" style="display:none">0/1</span>Bildschirmtastatur (Win+Strg+O)</button>
+      <button class="btn blue" data-action="magnifier"   data-confirm="1" data-perm="access"><span class="counter" style="display:none">0/1</span>Lupe / Zoom (Win++)</button>
+      <button class="btn green" data-action="magnifierClose" data-confirm="1" data-perm="access"><span class="counter" style="display:none">0/1</span>&#8617; Lupe schliessen</button>
+      <button class="btn blue" data-action="printScreen" data-confirm="1" data-perm="access"><span class="counter" style="display:none">0/1</span>Screenshot in Zwischenablage (Druck)</button>
+    </div>
+  </div>
+
+  <!-- ===== BROWSER & MEDIEN ===== -->
+  <div class="tab-content" id="tab-browser">
+    <div class="card" data-perm="browser">
+      <div class="card-title">Suche starten</div>
+      <input type="text" class="text-input" id="search-text" value="Ich sehe dich :)" placeholder="Suchbegriff">
+      <button class="btn green" data-action="browserSearch" data-confirm="1" data-perm="browser"><span class="counter" style="display:none">0/1</span>Im Browser suchen (Strg+L)</button>
+    </div>
+    <div class="card" data-perm="browser">
+      <div class="card-title">Browser-Streiche</div>
+      <div class="btn-row">
+        <button class="btn blue" data-action="browserBack" data-confirm="1"><span class="counter" style="display:none">0/1</span>Zurueck (Alt+Links)</button>
+        <button class="btn blue" data-action="reopenTab"  data-confirm="1"><span class="counter" style="display:none">0/1</span>Tab wieder oeffnen</button>
+        <button class="btn blue" data-action="closeTab"  data-confirm="1" data-perm="browser"><span class="counter" style="display:none">0/1</span>Tab schliessen</button>
+        <button class="btn blue" data-action="zoomOut"   data-confirm="1" data-perm="browser"><span class="counter" style="display:none">0/1</span>Zoom auf 25%</button>
+        <button class="btn blue" data-action="history"   data-confirm="1" data-perm="browser"><span class="counter" style="display:none">0/1</span>Verlauf</button>
+        <button class="btn blue" data-action="downloads" data-confirm="1" data-perm="browser"><span class="counter" style="display:none">0/1</span>Downloads</button>
+        <button class="btn blue" data-action="ytRestart" data-confirm="1" data-perm="browser"><span class="counter" style="display:none">0/1</span>YouTube Neustart (0)</button>
+      </div>
+    </div>
+    <div class="card" data-perm="media">
+      <div class="card-title">Multimedia</div>
+      <div class="btn-row">
+        <button class="btn blue" data-action="mediaPlayPause" data-confirm="1" data-perm="media"><span class="counter" style="display:none">0/1</span>Play/Pause</button>
+        <button class="btn blue" data-action="mediaNext" data-confirm="1" data-perm="media"><span class="counter" style="display:none">0/1</span>Naechster</button>
+        <button class="btn blue" data-action="mediaPrev" data-confirm="1" data-perm="media"><span class="counter" style="display:none">0/1</span>Vorheriger</button>
+        <button class="btn blue" data-action="mediaMute" data-confirm="1" data-perm="media"><span class="counter" style="display:none">0/1</span>Stumm</button>
+        <button class="btn blue" data-action="volUp"     data-confirm="1" data-perm="media"><span class="counter" style="display:none">0/1</span>Lauter</button>
+        <button class="btn blue" data-action="volDown"   data-confirm="1" data-perm="media"><span class="counter" style="display:none">0/1</span>Leiser</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN ===== -->
+  <div class="tab-content" id="tab-extras">
+ <nav class="extras-nav" aria-label="Extras schnell erreichen"><a href="#extra-screen">Bildschirm</a><a href="#extra-windows">Fenster</a><a href="#extra-overlays">Vollbild</a><a href="#extra-browser">Browser</a><a href="#extra-tools">Tools</a></nav>
+ <div class="card"><div class="card-title">Desktops &amp; Fenster</div><div class="btn-grid"><button class="btn blue" data-action="desktopPrev" data-confirm="1"><span>← Desktop links</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="desktopNext" data-confirm="1"><span>Desktop rechts →</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="desktopClose" data-confirm="3"><span>Desktop schließen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="browserFullscreen" data-confirm="1"><span>Vollbild · F11</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="cancelShutdown" data-confirm="1"><span>Shutdown abbrechen</span><span class="counter" style="display:none"></span></button></div></div>
+ <div class="card" id="extra-screen"><div class="card-title">Bildschirm-Vorschau</div><p class="card-hint">Einzelbild speichern oder Live-Vorschau mit etwa einem Bild pro Sekunde starten. Stoppt beim Verlassen dieses Tabs.</p><label for="screen-select" class="card-hint">Bildschirm</label><select id="screen-select" class="text-input"><option value="0">Bildschirm 1</option></select><div class="btn-grid"><button class="btn blue" data-action="screenshotView" data-confirm="1"><span>Screenshot anzeigen</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="livePreview" data-confirm="1"><span>Live-Vorschau starten</span><span class="counter" style="display:none"></span></button></div><p id="preview-status" class="card-hint" role="status"></p><img id="screen-preview" class="hidden" alt="Aufnahme des ausgewählten Bildschirms"><a id="screen-download" class="hidden" download="screenshot.jpg">Bild speichern</a></div>
+ <div class="card" id="extra-windows"><div class="card-title">Fenster-Fernbedienung</div><p class="card-hint">Fensterliste laden und eine Anwendung gezielt steuern. Panic Control bleibt am PC erreichbar.</p><button class="btn blue" data-action="windowList" data-confirm="1"><span>Fensterliste aktualisieren</span><span class="counter" style="display:none"></span></button><label for="window-select" class="card-hint">Anwendung</label><select id="window-select" class="text-input"><option value="">Zuerst Liste laden</option></select><div class="btn-grid"><button class="btn blue" data-action="windowFocus" data-confirm="1"><span>Nach vorne holen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="windowMinimize" data-confirm="1"><span>Minimieren</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="windowMaximize" data-confirm="1"><span>Maximieren</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="windowRestore" data-confirm="1"><span>Normal anzeigen</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="minimizeAll" data-confirm="2"><span>Alle minimieren</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="restoreAll" data-confirm="1"><span>Alle zurückholen</span><span class="counter" style="display:none"></span></button></div><p class="card-hint">Kürzel für das gerade aktive Fenster:</p><div class="btn-grid"><button class="btn blue" data-action="windowSnapLeft" data-confirm="1"><span>← Links anordnen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="windowSnapRight" data-confirm="1"><span>Rechts anordnen →</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="windowMonitorNext" data-confirm="1"><span>Nächster Monitor</span><span class="counter" style="display:none"></span></button></div></div>
+ <div class="card"><div class="card-title">Text zwischen Handy &amp; PC</div><p class="card-hint">Bis zu 4096 Zeichen. Übertragen wird nur der Text, den du ausdrücklich anforderst oder sendest.</p><label for="clipboard-text" class="card-hint">Zwischenablage</label><textarea id="clipboard-text" class="text-input" rows="4" maxlength="4096" placeholder="Text einfügen …"></textarea><div class="btn-grid"><button class="btn blue" data-action="clipboardRead" data-confirm="1"><span>Vom PC lesen</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="clipboardWrite" data-confirm="2"><span>An PC senden</span><span class="counter" style="display:none"></span></button></div></div>
+ <div class="card" id="extra-overlays"><div class="card-title">Vollbild auf dem PC</div><p class="card-hint">Direkt sichtbar im Vordergrund. Alle Anzeigen haben einen Schließen-Knopf und lassen sich mit Esc beenden.</p><label for="pc-message" class="card-hint">Nachricht</label><textarea id="pc-message" class="text-input" rows="2" maxlength="240" placeholder="Bin gleich wieder da …"></textarea><button class="btn blue" data-action="showMessage" data-confirm="1"><span>Nachricht anzeigen</span><span class="counter" style="display:none"></span></button><div class="btn-grid"><button class="btn warn" data-action="screenBlank" data-confirm="2"><span>Schwarzer Bildschirm</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="desktopClock" data-confirm="1"><span>Große Uhr</span><span class="counter" style="display:none"></span></button></div><label for="countdown-seconds" class="card-hint">Countdown · Sekunden (1–600)</label><input id="countdown-seconds" class="text-input" type="number" min="1" max="600" value="60"><button class="btn blue" data-action="countdown" data-confirm="1"><span>Countdown starten</span><span class="counter" style="display:none"></span></button><label for="screen-color" class="card-hint">Testfarbe · 30 Sekunden</label><select id="screen-color" class="text-input"><option value="red">Rot</option><option value="green">Grün</option><option value="blue">Blau</option><option value="white">Weiß</option><option value="black">Schwarz</option></select><button class="btn blue" data-action="screenColor" data-confirm="1"><span>Farbtest anzeigen</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="closeOverlays" data-confirm="1"><span>Alle Vollbild-Anzeigen schließen</span><span class="counter" style="display:none"></span></button></div>
+ <div class="card" id="extra-browser"><div class="card-title">Browser-Fernbedienung</div><p class="card-hint">Wirkt auf den Browser, der am PC gerade aktiv ist.</p><div class="btn-grid"><button class="btn blue" data-action="browserNewTab" data-confirm="1"><span>＋ Neuer Tab</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="tabPrev" data-confirm="1"><span>← Vorheriger Tab</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="tabNext" data-confirm="1"><span>Nächster Tab →</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="browserRefresh" data-confirm="2"><span>Seite neu laden</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="browserHardRefresh" data-confirm="2"><span>Ohne Cache laden</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="browserZoomIn" data-confirm="1"><span>Zoom ＋</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="browserZoomReset" data-confirm="1"><span>Zoom 100 %</span><span class="counter" style="display:none"></span></button></div></div>
+ <div class="card" id="extra-tools"><div class="card-title">Schnelle Tools</div><div class="btn-grid"><button class="btn blue" data-action="openExplorer" data-confirm="1"><span>Explorer</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openCalculator" data-confirm="1"><span>Rechner</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openNotepad" data-confirm="1"><span>Editor</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openSettings" data-confirm="1"><span>Einstellungen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="emojiPanel" data-confirm="1"><span>Emoji-Auswahl</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="snippingTool" data-confirm="1"><span>Bildschirmausschnitt</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="pasteClipboard" data-confirm="2"><span>PC-Text einfügen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="mediaStop" data-confirm="1"><span>Medien stoppen</span><span class="counter" style="display:none"></span></button></div></div>
+ <div class="card"><div class="card-title">PC-Status</div><button class="btn blue" data-action="pcStats" data-confirm="1"><span>Auslastung anzeigen</span><span class="counter" style="display:none"></span></button><div id="pc-stats" class="card-hint" role="status"></div></div>
+ <div class="card"><div class="card-title">Anwendung öffnen</div><p class="card-hint">Die Anwendung wird im PC-Fenster ausgewählt.</p><button class="btn blue" data-action="launchApp" data-confirm="1"><span>Ausgewählte Anwendung öffnen</span><span class="counter" style="display:none"></span></button></div>
+ <div class="card" id="extra-neu"><div class="card-title">Neu · System-Streiche</div><p class="card-hint">Wirken sofort und lassen sich zurücksetzen.</p><div class="btn-grid"><button class="btn warn" data-action="taskbarAutoHide" data-confirm="1"><span>Taskleiste verschwinden lassen</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="taskbarRestore" data-confirm="1"><span>Taskleiste zurück</span><span class="counter" style="display:none"></span></button><button class="btn purple" data-action="wallpaperTroll" data-confirm="1"><span>Hintergrund ersetzen</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="wallpaperRestore" data-confirm="1"><span>Hintergrund zurück</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="magnifierInvert" data-confirm="1"><span>Farben invertieren (Lupe)</span><span class="counter" style="display:none"></span></button></div></div>
+ <div class="card" id="extra-system2"><div class="card-title">Neu · Einstellungen &amp; Tools</div><p class="card-hint">Oeffnet die jeweilige Windows-Seite direkt. Rueckweg mit <strong>↺</strong>.</p><div class="btn-grid"><button class="btn warn" data-action="cursorBig" data-confirm="1"><span>Cursor 48 px</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="screensaverNow" data-confirm="1"><span>Bildschirmschoner jetzt</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="taskViewToggle" data-confirm="1"><span>Task-Ansicht</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="keepAwake" data-confirm="1"><span>Wachhalten an (30 min)</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="keepAwakeOff" data-confirm="1"><span>↺ Wachhalten aus</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openDownloadsFolder" data-confirm="1"><span>Downloads-Ordner</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openTempFolder" data-confirm="1"><span>Temp-Ordner</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setSound" data-confirm="1"><span>Sound-Einstellungen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setDisplay" data-confirm="1"><span>Anzeige-Einstellungen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setBluetooth" data-confirm="1"><span>Bluetooth-Einstellungen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setNetwork" data-confirm="1"><span>Netzwerk-Einstellungen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setPrivacy" data-confirm="1"><span>Datenschutz-Einstellungen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setApps" data-confirm="1"><span>App-Verwaltung</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setUpdate" data-confirm="1"><span>Windows-Update</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setAbout" data-confirm="1"><span>Systeminfo</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setPrinters" data-confirm="1"><span>Drucker</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setTaskbar" data-confirm="1"><span>Taskleisten-Einstellungen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setDateTime" data-confirm="1"><span>Datum & Uhrzeit</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setPower" data-confirm="1"><span>Energieoptionen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="setNotifications" data-confirm="1"><span>Benachrichtigungen</span><span class="counter" style="display:none"></span></button></div></div>
+ <div class="card" id="extra-desktop"><div class="card-title">Neu · Desktop &amp; Eingaben</div><p class="card-hint">Jede Aktion mit <strong>↺</strong> ist der Rückweg.</p><div class="btn-grid"><button class="btn warn" data-action="cursorGiant" data-confirm="1"><span>Riesen-Cursor (96 px)</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="cursorNormal" data-confirm="1"><span>↺ Cursor normal</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="monitorOff" data-confirm="1"><span>Monitor ausschalten</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="monitorOn" data-confirm="1"><span>↺ Monitor an</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="iconsHide" data-confirm="1"><span>Desktop-Symbole verstecken</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="iconsShow" data-confirm="1"><span>↺ Symbole zurück</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="winHold" data-confirm="1"><span>Win-Taste festhalten</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="winRelease" data-confirm="1"><span>↺ Win-Taste lösen</span><span class="counter" style="display:none"></span></button><button class="btn purple" data-action="altTabSpam" data-confirm="1"><span>Alt+Tab-Karussell</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="screenSaverStart" data-confirm="1"><span>Bildschirmschoner starten</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="clipboardClear" data-confirm="1"><span>Zwischenablage leeren</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="taskView" data-confirm="1"><span>Task-Ansicht öffnen</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="typeSpam" data-confirm="1"><span>Text-Salve (20×)</span><span class="counter" style="display:none"></span></button><button class="btn green" data-action="releaseKeys" data-confirm="1"><span>↺ Alle Tasten lösen</span><span class="counter" style="display:none"></span></button><button class="btn purple" data-action="mouseWarpCorner" data-confirm="1"><span>Maus in die Ecke</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openRegedit" data-confirm="1"><span>Registry-Editor</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openControlPanel" data-confirm="1"><span>Systemsteuerung</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openEventViewer" data-confirm="1"><span>Ereignisanzeige</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openPowerShell" data-confirm="1"><span>PowerShell öffnen</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="openDeviceManager" data-confirm="1"><span>Geräte-Manager</span><span class="counter" style="display:none"></span></button></div></div>
+ <div class="card" id="extra-troll"><div class="card-title">Spaß &amp; Troll</div><p class="card-hint">Kleine Streiche für zwischendurch. Alles ohne Adminrechte, alles wieder aufhaltbar.</p><div class="btn-grid"><button class="btn purple" data-action="rickroll" data-confirm="1"><span>🎵 Never gonna give you up</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="capsSpam" data-confirm="1"><span>Caps-Lock-Disco</span><span class="counter" style="display:none"></span></button><button class="btn purple" data-action="mouseShake" data-confirm="1"><span>Mauszeiger-Karussell</span><span class="counter" style="display:none"></span></button><button class="btn warn" data-action="numLockParty" data-confirm="1"><span>Num-Lock-Party</span><span class="counter" style="display:none"></span></button><button class="btn purple" data-action="volumeParty" data-confirm="2"><span>Lautstärke-Achterbahn</span><span class="counter" style="display:none"></span></button><button class="btn blue" data-action="tabSpam" data-confirm="1"><span>Tab-Feuerwerk</span><span class="counter" style="display:none"></span></button></div></div>
+ <div class="card" id="extra-danger"><div class="card-title">Selbstzerstörung</div><p class="card-hint">Entfernt geplante Aufgabe, Autostart-Einträge, Defender-Ausnahmen, Firewall-Regel und den kompletten Programmordner vom PC. Danach ist der Fernzugriff beendet und nicht wiederherstellbar.</p><label for="self-destruct-word" class="card-hint">Zur Bestätigung <strong>LOESCHEN</strong> eintippen, dann fünfmal auf den Knopf drücken</label><input id="self-destruct-word" class="text-input" type="text" autocomplete="off" placeholder="LOESCHEN"><button class="btn danger" data-action="selfDestruct" data-confirm="5"><span>Selbstzerstörung ausführen</span><span class="counter" style="display:none">0/5</span></button></div>
+ </div><div class="tab-content" id="tab-admin">
+    <div class="card">
+      <div class="card-title">Cooldowns</div>
+      <div class="card-hint">Sekunden pro Funktion und Nutzer. Andere Buttons bleiben frei. 0 = aus. Stoppen, Entsperren und Ausschalten bleiben frei.</div>
+      <div class="cooldown-fields">
+        <label>Leicht<input id="cd-light" class="text-input" type="number" min="0" max="3600" step="1" inputmode="numeric" value="2"></label>
+        <label>Mittel<input id="cd-medium" class="text-input" type="number" min="0" max="3600" step="1" inputmode="numeric" value="5"></label>
+        <label>Schwer<input id="cd-heavy" class="text-input" type="number" min="0" max="3600" step="1" inputmode="numeric" value="15"></label>
+      </div>
+      <button id="save-cooldowns" class="btn blue">Cooldowns speichern</button>
+      <p class="panic-info">0 bis 3600 Sekunden. Gespeicherte Zeiten gelten fuer neue Aktionen; 0 hebt laufende Sperren der Kategorie auf.</p>
+      <div class="edit-panel">
+        <div class="field-label">Cooldowns gelten fuer</div>
+        <div id="cooldown-users" class="perm-grid"></div>
+        <p class="panic-info">Haken = Cooldown aktiv. Aenderungen werden sofort gespeichert. Ohne Haken gelten fuer diesen Account keine Cooldowns.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Benutzer</div>
+      <div id="user-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Neuen Account anlegen</div>
+      <input type="text" class="text-input" id="new-user" placeholder="Benutzername" autocapitalize="none" spellcheck="false">
+      <input type="password" class="text-input" id="new-pass" autocomplete="new-password" placeholder="Passwort (8-64 Zeichen)" autocapitalize="none" spellcheck="false">
+      <div class="card-hint">Haken setzen, welche Funktionen der Account darf (Tabs unten):</div>
+      <div id="new-perms"></div>
+      <button class="btn blue small" id="create-user-btn">Account anlegen</button>
+    </div>
+    <div class="card"><div class="card-title">PC-Version · Lokales WLAN</div><p class="card-hint">Das PC-Fenster zeigt die Handy-Adresse. Updates erfolgen am PC durch Austausch des Programms. Passwörter werden ausschließlich als Hash gespeichert.</p></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">OK</div>
+<div id="permission-notice" class="notice-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="permission-title" tabindex="-1"><div class="notice-box"><h2 id="permission-title">Deine Rechte wurden geaendert</h2><p>Die neuen Rechte gelten sofort. Diese Seite wird automatisch neu geladen.</p></div></div>
+<div id="recovery-note" class="recovery-note hidden" role="status" aria-live="polite"></div>
+
+<script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,878 @@
+[
+  {
+    "id": "lock",
+    "category": 2
+  },
+  {
+    "id": "desktop",
+    "category": 1
+  },
+  {
+    "id": "sleep",
+    "category": 3
+  },
+  {
+    "id": "shutdown",
+    "category": 3
+  },
+  {
+    "id": "driftLeft",
+    "category": 2
+  },
+  {
+    "id": "driftRight",
+    "category": 2
+  },
+  {
+    "id": "driftUp",
+    "category": 2
+  },
+  {
+    "id": "driftDown",
+    "category": 2
+  },
+  {
+    "id": "jitter",
+    "category": 2
+  },
+  {
+    "id": "teleport",
+    "category": 2
+  },
+  {
+    "id": "circle",
+    "category": 2
+  },
+  {
+    "id": "autoClick",
+    "category": 3
+  },
+  {
+    "id": "bungee",
+    "category": 2
+  },
+  {
+    "id": "labyrinth",
+    "category": 2
+  },
+  {
+    "id": "scrollWheel",
+    "category": 2
+  },
+  {
+    "id": "boomerang",
+    "category": 2
+  },
+  {
+    "id": "stopAll",
+    "category": 0
+  },
+  {
+    "id": "mouseSpeedMin",
+    "category": 2
+  },
+  {
+    "id": "mouseSpeedNormal",
+    "category": 0
+  },
+  {
+    "id": "swapButtons",
+    "category": 2
+  },
+  {
+    "id": "swapButtonsOff",
+    "category": 0
+  },
+  {
+    "id": "typeText",
+    "category": 3
+  },
+  {
+    "id": "iSeeYou",
+    "category": 3
+  },
+  {
+    "id": "layoutSwap",
+    "category": 2
+  },
+  {
+    "id": "overwrite",
+    "category": 3
+  },
+  {
+    "id": "doubleSpace",
+    "category": 2
+  },
+  {
+    "id": "corruptor",
+    "category": 2
+  },
+  {
+    "id": "capsToggle",
+    "category": 1
+  },
+  {
+    "id": "randomKey",
+    "category": 2
+  },
+  {
+    "id": "altF4",
+    "category": 3
+  },
+  {
+    "id": "save",
+    "category": 3
+  },
+  {
+    "id": "undo",
+    "category": 3
+  },
+  {
+    "id": "selectAllSpace",
+    "category": 3
+  },
+  {
+    "id": "fakeBsod",
+    "category": 2
+  },
+  {
+    "id": "rotate",
+    "category": 2
+  },
+  {
+    "id": "virtDesktop",
+    "category": 2
+  },
+  {
+    "id": "winPSecond",
+    "category": 3
+  },
+  {
+    "id": "secondScreenBack",
+    "category": 0
+  },
+  {
+    "id": "peekDesktop",
+    "category": 1
+  },
+  {
+    "id": "gfxReset",
+    "category": 3
+  },
+  {
+    "id": "windowDance",
+    "category": 2
+  },
+  {
+    "id": "winELoop",
+    "category": 3
+  },
+  {
+    "id": "ctrlAltDel",
+    "category": 2
+  },
+  {
+    "id": "taskMgr",
+    "category": 1
+  },
+  {
+    "id": "printDialog",
+    "category": 1
+  },
+  {
+    "id": "gameBar",
+    "category": 1
+  },
+  {
+    "id": "xboxRecord",
+    "category": 3
+  },
+  {
+    "id": "beep",
+    "category": 1
+  },
+  {
+    "id": "stickyKeys",
+    "category": 2
+  },
+  {
+    "id": "stickyOff",
+    "category": 0
+  },
+  {
+    "id": "filterKeys",
+    "category": 3
+  },
+  {
+    "id": "filterOff",
+    "category": 0
+  },
+  {
+    "id": "mouseKeys",
+    "category": 2
+  },
+  {
+    "id": "mouseKeysOff",
+    "category": 0
+  },
+  {
+    "id": "narrator",
+    "category": 2
+  },
+  {
+    "id": "osk",
+    "category": 1
+  },
+  {
+    "id": "magnifier",
+    "category": 2
+  },
+  {
+    "id": "magnifierClose",
+    "category": 0
+  },
+  {
+    "id": "printScreen",
+    "category": 1
+  },
+  {
+    "id": "highContrast",
+    "category": 2
+  },
+  {
+    "id": "browserSearch",
+    "category": 3
+  },
+  {
+    "id": "browserBack",
+    "category": 3
+  },
+  {
+    "id": "reopenTab",
+    "category": 1
+  },
+  {
+    "id": "closeTab",
+    "category": 3
+  },
+  {
+    "id": "zoomOut",
+    "category": 2
+  },
+  {
+    "id": "history",
+    "category": 1
+  },
+  {
+    "id": "downloads",
+    "category": 1
+  },
+  {
+    "id": "ytRestart",
+    "category": 1
+  },
+  {
+    "id": "mediaPlayPause",
+    "category": 1
+  },
+  {
+    "id": "mediaNext",
+    "category": 1
+  },
+  {
+    "id": "mediaPrev",
+    "category": 1
+  },
+  {
+    "id": "mediaMute",
+    "category": 1
+  },
+  {
+    "id": "volUp",
+    "category": 1
+  },
+  {
+    "id": "volDown",
+    "category": 1
+  },
+  {
+    "id": "admin",
+    "category": 0
+  },
+  {
+    "id": "mouseMove",
+    "category": 2
+  },
+  {
+    "id": "mouseLeft",
+    "category": 2
+  },
+  {
+    "id": "mouseRight",
+    "category": 2
+  },
+  {
+    "id": "mouseMiddle",
+    "category": 2
+  },
+  {
+    "id": "scrollUp",
+    "category": 2
+  },
+  {
+    "id": "scrollDown",
+    "category": 2
+  },
+  {
+    "id": "mouseDouble",
+    "category": 2
+  },
+  {
+    "id": "desktopPrev",
+    "category": 1
+  },
+  {
+    "id": "desktopNext",
+    "category": 1
+  },
+  {
+    "id": "desktopClose",
+    "category": 2
+  },
+  {
+    "id": "cancelShutdown",
+    "category": 0
+  },
+  {
+    "id": "screenshotView",
+    "category": 1
+  },
+  {
+    "id": "pcStats",
+    "category": 1
+  },
+  {
+    "id": "launchApp",
+    "category": 2
+  },
+  {
+    "id": "browserFullscreen",
+    "category": 1
+  },
+  {
+    "id": "windowList",
+    "category": 1
+  },
+  {
+    "id": "windowFocus",
+    "category": 2
+  },
+  {
+    "id": "windowMinimize",
+    "category": 2
+  },
+  {
+    "id": "windowMaximize",
+    "category": 2
+  },
+  {
+    "id": "windowRestore",
+    "category": 2
+  },
+  {
+    "id": "clipboardRead",
+    "category": 2
+  },
+  {
+    "id": "clipboardWrite",
+    "category": 2
+  },
+  {
+    "id": "showMessage",
+    "category": 1
+  },
+  {
+    "id": "minimizeAll",
+    "category": 2
+  },
+  {
+    "id": "restoreAll",
+    "category": 1
+  },
+  {
+    "id": "livePreview",
+    "category": 2
+  },
+  {
+    "id": "screenBlank",
+    "category": 2
+  },
+  {
+    "id": "desktopClock",
+    "category": 1
+  },
+  {
+    "id": "countdown",
+    "category": 1
+  },
+  {
+    "id": "screenColor",
+    "category": 2
+  },
+  {
+    "id": "closeOverlays",
+    "category": 0
+  },
+  {
+    "id": "windowSnapLeft",
+    "category": 2
+  },
+  {
+    "id": "windowSnapRight",
+    "category": 2
+  },
+  {
+    "id": "windowMonitorNext",
+    "category": 2
+  },
+  {
+    "id": "browserNewTab",
+    "category": 1
+  },
+  {
+    "id": "tabNext",
+    "category": 1
+  },
+  {
+    "id": "tabPrev",
+    "category": 1
+  },
+  {
+    "id": "browserRefresh",
+    "category": 2
+  },
+  {
+    "id": "browserHardRefresh",
+    "category": 2
+  },
+  {
+    "id": "browserZoomIn",
+    "category": 1
+  },
+  {
+    "id": "browserZoomReset",
+    "category": 1
+  },
+  {
+    "id": "mediaStop",
+    "category": 1
+  },
+  {
+    "id": "emojiPanel",
+    "category": 1
+  },
+  {
+    "id": "snippingTool",
+    "category": 1
+  },
+  {
+    "id": "pasteClipboard",
+    "category": 2
+  },
+  {
+    "id": "openExplorer",
+    "category": 2
+  },
+  {
+    "id": "openCalculator",
+    "category": 2
+  },
+  {
+    "id": "openNotepad",
+    "category": 2
+  },
+  {
+    "id": "openSettings",
+    "category": 2
+  },
+  {
+    "id": "hideCursor",
+    "category": 2
+  },
+  {
+    "id": "showCursor",
+    "category": 0
+  },
+  {
+    "id": "fakeUpdate",
+    "category": 2
+  },
+  {
+    "id": "speechLoop",
+    "category": 2
+  },
+  {
+    "id": "killExplorer",
+    "category": 3
+  },
+  {
+    "id": "restartExplorer",
+    "category": 0
+  },
+  {
+    "id": "blackout",
+    "category": 2
+  },
+  {
+    "id": "freezeInput",
+    "category": 3
+  },
+  {
+    "id": "unfreezeInput",
+    "category": 0
+  },
+  {
+    "id": "volumeMax",
+    "category": 2
+  },
+  {
+    "id": "openCmd",
+    "category": 2
+  },
+  {
+    "id": "selfDestruct",
+    "category": 3
+  },
+  {
+    "id": "taskbarAutoHide",
+    "category": 2
+  },
+  {
+    "id": "taskbarRestore",
+    "category": 0
+  },
+  {
+    "id": "magnifierInvert",
+    "category": 2
+  },
+  {
+    "id": "wallpaperTroll",
+    "category": 2
+  },
+  {
+    "id": "wallpaperRestore",
+    "category": 0
+  },
+  {
+    "id": "cursorGiant",
+    "category": 2
+  },
+  {
+    "id": "cursorNormal",
+    "category": 0
+  },
+  {
+    "id": "monitorOff",
+    "category": 2
+  },
+  {
+    "id": "monitorOn",
+    "category": 0
+  },
+  {
+    "id": "iconsHide",
+    "category": 2
+  },
+  {
+    "id": "iconsShow",
+    "category": 0
+  },
+  {
+    "id": "winHold",
+    "category": 3
+  },
+  {
+    "id": "winRelease",
+    "category": 0
+  },
+  {
+    "id": "altTabSpam",
+    "category": 2
+  },
+  {
+    "id": "screenSaverStart",
+    "category": 2
+  },
+  {
+    "id": "clipboardClear",
+    "category": 2
+  },
+  {
+    "id": "taskView",
+    "category": 2
+  },
+  {
+    "id": "typeSpam",
+    "category": 3
+  },
+  {
+    "id": "releaseKeys",
+    "category": 0
+  },
+  {
+    "id": "mouseWarpCorner",
+    "category": 2
+  },
+  {
+    "id": "openRegedit",
+    "category": 2
+  },
+  {
+    "id": "openControlPanel",
+    "category": 2
+  },
+  {
+    "id": "openEventViewer",
+    "category": 2
+  },
+  {
+    "id": "openPowerShell",
+    "category": 2
+  },
+  {
+    "id": "openDeviceManager",
+    "category": 2
+  },
+  {
+    "id": "rickroll",
+    "category": 2
+  },
+  {
+    "id": "capsSpam",
+    "category": 2
+  },
+  {
+    "id": "mouseShake",
+    "category": 2
+  },
+  {
+    "id": "numLockParty",
+    "category": 2
+  },
+  {
+    "id": "volumeParty",
+    "category": 2
+  },
+  {
+    "id": "tabSpam",
+    "category": 2
+  },
+  {
+    "id": "cursorBig",
+    "category": 2
+  },
+  {
+    "id": "screensaverNow",
+    "category": 2
+  },
+  {
+    "id": "taskViewToggle",
+    "category": 2
+  },
+  {
+    "id": "keepAwake",
+    "category": 2
+  },
+  {
+    "id": "keepAwakeOff",
+    "category": 0
+  },
+  {
+    "id": "openDownloadsFolder",
+    "category": 2
+  },
+  {
+    "id": "openTempFolder",
+    "category": 2
+  },
+  {
+    "id": "setSound",
+    "category": 2
+  },
+  {
+    "id": "setDisplay",
+    "category": 2
+  },
+  {
+    "id": "setBluetooth",
+    "category": 2
+  },
+  {
+    "id": "setNetwork",
+    "category": 2
+  },
+  {
+    "id": "setPrivacy",
+    "category": 2
+  },
+  {
+    "id": "setApps",
+    "category": 2
+  },
+  {
+    "id": "setUpdate",
+    "category": 2
+  },
+  {
+    "id": "setAbout",
+    "category": 2
+  },
+  {
+    "id": "setPrinters",
+    "category": 2
+  },
+  {
+    "id": "setTaskbar",
+    "category": 2
+  },
+  {
+    "id": "setDateTime",
+    "category": 2
+  },
+  {
+    "id": "setPower",
+    "category": 2
+  },
+  {
+    "id": "setNotifications",
+    "category": 2
+  },
+  {
+    "id": "beepOnKey",
+    "category": 2
+  },
+  {
+    "id": "mouseMoveAbs",
+    "category": 0
+  },
+  {
+    "id": "mousePath",
+    "category": 0
+  },
+  {
+    "id": "beepOff",
+    "category": 1
+  },
+  {
+    "id": "keyDelayOn",
+    "category": 2
+  },
+  {
+    "id": "keyDelayOff",
+    "category": 1
+  },
+  {
+    "id": "clickJump",
+    "category": 2
+  },
+  {
+    "id": "clickJumpOff",
+    "category": 1
+  },
+  {
+    "id": "slowType",
+    "category": 2
+  },
+  {
+    "id": "clockWrong",
+    "category": 3
+  },
+  {
+    "id": "clockFix",
+    "category": 1
+  },
+  {
+    "id": "explorerLoop",
+    "category": 3
+  },
+  {
+    "id": "fakeRansom",
+    "category": 3
+  },
+  {
+    "id": "mirrorH",
+    "category": 2
+  },
+  {
+    "id": "mirrorV",
+    "category": 2
+  },
+  {
+    "id": "mirrorHV",
+    "category": 2
+  },
+  {
+    "id": "mirrorOff",
+    "category": 1
+  },
+  {
+    "id": "speechStop",
+    "category": 1
+  },
+  {
+    "id": "startMenuBreak",
+    "category": 3
+  },
+  {
+    "id": "startMenuFix",
+    "category": 1
+  },
+  {
+    "id": "strobe",
+    "category": 2
+  },
+  {
+    "id": "strobeOff",
+    "category": 1
+  },
+  {
+    "id": "taskbarHide",
+    "category": 2
+  },
+  {
+    "id": "taskbarShow",
+    "category": 1
+  },
+  {
+    "id": "taskbarTiny",
+    "category": 2
+  },
+  {
+    "id": "taskbarTinyOff",
+    "category": 1
+  },
+  {
+    "id": "titleRename",
+    "category": 2
+  },
+  {
+    "id": "update",
+    "category": 1
+  },
+  {
+    "id": "wallpaperForce",
+    "category": 2
+  },
+  {
+    "id": "wallpaperSpam",
+    "category": 2
+  },
+  {
+    "id": "windowCascade",
+    "category": 1
+  },
+  {
+    "id": "windowJiggle",
+    "category": 2
+  }
+]

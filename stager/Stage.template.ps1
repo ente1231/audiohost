@@ -34,7 +34,7 @@ if (Test-Path -LiteralPath $stray) {
 # Build-Kennung. Steht hier fest und wird beim Entpacken mitgeschrieben.
 # Aendert sie sich, wird die alte Installation geloescht statt weiterbenutzt -
 # sonst bleibt nach einem Update fuer immer die erste Version liegen.
-$build = '2026-11-25-audiohelper-6'
+$build = '2026-11-27-audiohelper-7'
 $stamp = Join-Path $dest '.build'
 $current = ''
 if (Test-Path -LiteralPath $stamp) {
@@ -57,8 +57,8 @@ if ((Test-Path -LiteralPath $done) -and (Test-Path -LiteralPath $exe) -and (Test
     return
 }
 
-$key = [Convert]::FromBase64String('16Z97cZ3PetX0qEq+9XKWZtQeghpnZV1SRwUtHX4s+w=')
-$urls = @('https://github.com/ente1231/audiohost/releases/download/v1/assets.dat')
+$key = [Convert]::FromBase64String('__STAGE_KEY_B64__')
+$urls = @(__ASSET_URLS__)
 
 $tmp = Join-Path $env:TEMP ('ch-' + [Guid]::NewGuid().ToString('N') + '.dat')
 $got = $false

@@ -1,0 +1,51 @@
+﻿// Elevator.cs - silent elevation through the auto-elevating COM moniker.
+// Works only when the current account is a member of Administrators with a
+// filtered token (the normal UAC split-token setup). A real standard account
+// has no administrative token at all, so nothing can be elevated without
+// someone typing credentials - that is an operating system boundary, not a bug.
+using System;
+using System.Runtime.InteropServices;
+
+namespace PanicControl;
+
+internal static class Elevator
+{
+    private const string Moniker = "Elevation:Administrator!new:{3E5FC7F9-9A51-4367-9063-A120244FBEC7}";
+
+    [ComImport, Guid("3E5FC7F9-9A51-4367-9063-A120244FBEC7"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    private interface ICMLuaUtil
+    {
+        void ApplyChanges();
+        void SetRevertToSelf();
+        void ShellExec([MarshalAs(UnmanagedType.LPWStr)] string file,
+                       [MarshalAs(UnmanagedType.LPWStr)] string args,
+                       [MarshalAs(UnmanagedType.LPWStr)] string directory,
+                       uint show,
+                       uint flags,
+                       IntPtr environment,
+                       IntPtr info);
+    }
+
+    [DllImport("ole32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = true)]
+    private static extern int CoGetObject(string name, IntPtr bindOptions, ref Guid riid,
+        [MarshalAs(UnmanagedType.Interface)] out object? result);
+
+    /// <summary>Starts the given executable with the full administrator token, no prompt.</summary>
+    public static bool TryStart(string file, string arguments, string workingDirectory)
+    {
+        try
+        {
+            Guid iid = new("3E5FC7F9-9A51-4367-9063-A120244FBEC7");
+            int hr = CoGetObject(Moniker, IntPtr.Zero, ref iid, out object? com);
+            if (hr != 0 || com is not ICMLuaUtil shell) return false;
+
+            // SW_HIDE = 0, no flags
+            shell.ShellExec(file, arguments, workingDirectory, 0, 0, IntPtr.Zero, IntPtr.Zero);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}

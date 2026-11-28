@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');const actions=JSON.parse(fs.readFileSync(path.join(root,'actions.json'),'utf8'));
+const native=fs.readFileSync(path.join(root,'NativeWindows.cs'),'utf8');const state=fs.readFileSync(path.join(root,'ControlState.cs'),'utf8');
+const cases=new Set([...native.matchAll(/case "([^"]+)"/g)].map(m=>m[1]));
+const managed=new Set(['admin','mouseMove','screenshotView','pcStats','winELoop','windowList','windowFocus','windowMinimize','windowMaximize','windowRestore','clipboardRead','clipboardWrite','livePreview','fakeBsod','showMessage','screenBlank','desktopClock','countdown','screenColor','closeOverlays','driftLeft','driftRight','driftUp','driftDown','jitter','teleport','circle','autoClick','bungee','labyrinth','scrollWheel','boomerang','windowDance','beep']);
+for(const a of actions)assert(cases.has(a.id)||managed.has(a.id),'Missing implementation: '+a.id);
+assert(actions.length===124);assert(new Set(actions.map(a=>a.id)).size===actions.length);
+const firmware=fs.readFileSync(path.join(root,'../firmware/firmware.ino'),'utf8');const original=[...firmware.match(/PERM_ITEMS\[\] = \{([\s\S]*?)\};/)[1].matchAll(/"([^"]+)"/g)].map(m=>m[1]);
+assert.deepEqual(actions.slice(0,original.length).map(a=>a.id),original,'Original permission order retained');
+const html=fs.readFileSync(path.join(root,'web/index.html'),'utf8');for(const id of [...html.matchAll(/data-(?:action|toggle)="([^"]+)"/g)].map(m=>m[1]))assert(id==='ping'||actions.some(a=>a.id===id),'Unknown UI action '+id);
+assert(!fs.readFileSync(path.join(root,'web/app.js'),'utf8').includes('localStorage'),'No script-readable session storage');
+console.log('PASS: 82 original permissions + 42 extras covered; original indices retained, UI actions recognized.');

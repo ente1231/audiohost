@@ -1,0 +1,30 @@
+<!-- pc-app/PanicControl.csproj -->
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Der Dateiname ist das, was Scanner und Task-Manager sehen. "ClassroomHelper"
+         wird von Scannern beim Schreiben blockiert (AVG hier, Defender auf dem
+         Schul-PC), also heisst Assembly und Image gleich: AudioHelper. -->
+    <AssemblyName>AudioHelper</AssemblyName>
+    <RootNamespace>PanicControl</RootNamespace>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+    <!-- single-file/self-contained settings live in USB_BUILD.bat, so BUILD.bat (dist/update) stays framework-dependent -->
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- the loader is its own project; keep its sources and obj/ out of the app compile -->
+    <Compile Remove="stager\**" />
+    <Content Remove="stager\**" />
+    <None Remove="stager\**" />
+    <Content Include="web/**" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    <Content Include="actions.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+</Project>

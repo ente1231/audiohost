@@ -1,0 +1,18 @@
+bin/
+obj/
+test-data/
+test-results/
+data/
+build/
+dist/
+update/
+
+# build outputs and generated payloads - rebuild with BUILD.bat / make-payload.ps1
+loader/payload.bin
+loader/*.obj
+loader/*.exe
+USB_PAYLOAD/
+dxgi_proxy.dll
+
+# nested repo, deployed separately to pixyyess/panic-relay
+relay-deploy/
