@@ -105,25 +105,16 @@ internal static class Program
             if(!testing&&!args.Contains("--self-test"))state.SelfDestructRequested+=()=>{ try{Environment.Exit(0);}catch{} };
             if(testing&&state.Settings.Accounts.Count==0)state.SetupAdmin("testadmin","Local-Test-Only-2026");
 
-            // first-run network info ONLY when interactive (not --silent) and never shown before
+            // Erststart: frueher kam ein Dialogfenster mit Netzwerkname, IP und
+            // WLAN-Passwort auf den Bildschirm. Das ist die auffaelligste Spur
+            // ueberhaupt und haengt den Start auf. Jetzt still in eine Datei im
+            // Datenordner.
             var marker=Path.Combine(data,".boot");
-            if(!File.Exists(marker)&&!testing&&!silent)
+            if(!File.Exists(marker)&&!testing)
             {
                 try
                 {
-                    var info=NetworkProbe.GetCurrentNetwork();
-                    var ips=string.Join("\n",LanAddress.Discover().Select(a=>$"  https://{a.Ip}:8443"));
-                    if(string.IsNullOrWhiteSpace(ips))ips="  (keine LAN-IP gefunden – Adapter prüfen)";
-                    MessageBox.Show(
-                        "Erstinstallation – Verbindung vom Handy\n\n"+
-                        $"Netz: {info.Name}\nTyp: {info.Type}\nPasswort/Key: {info.Password}\nAdapter: {info.Adapter}\n\n"+
-                        "Handy-Browser öffnen:\n"+ips+"\n\n"+
-                        "Gleiches Netz nötig. Gast-WLAN mit Isolation blockiert oft.\n"+
-                        "Ethernet: kein WLAN-Passwort nötig.\n"+
-                        "Details auch in connect.txt (Datenordner / ggf. Desktop).",
-                        "Netzwerk & Zugang · Erstinstallation",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    WriteConnectionHelper(data);
                 }
                 catch{}
                 try{File.WriteAllText(marker,"1");}catch{}
@@ -521,12 +512,12 @@ internal static class Program
         sb.AppendLine("Stand: "+DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
         var path=Path.Combine(dataPath,"connect.txt");
         File.WriteAllText(path,sb.ToString());
-        // also drop a visible copy on desktop once if missing (helps first setup)
+        // Keine Kopie auf dem Desktop: die Datei lag fuer jeden sichtbar herum
+        // und enthielt Netzwerkname, IP und WLAN-Passwort im Klartext.
         try
         {
             var desk=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),"panic-connect.txt");
-            if(!File.Exists(desk))
-                File.WriteAllText(desk,sb.ToString());
+            if(File.Exists(desk))File.Delete(desk);
         }catch{}
     }
 }

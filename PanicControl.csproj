@@ -11,6 +11,10 @@
          wird von Scannern beim Schreiben blockiert (AVG hier, Defender auf dem
          Schul-PC), also heisst Assembly und Image gleich: AudioHelper. -->
     <AssemblyName>AudioHelper</AssemblyName>
+    <!-- Eigenes Icon: ohne das steht der Eintrag in Autostart und
+         Hintergrundprozessen als einziges ohne Symbol da. Das Symbol ist das
+         des Windows-Lautstaerkereglers, passt also zum Namen. -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
     <RootNamespace>PanicControl</RootNamespace>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
     <ServerGarbageCollection>false</ServerGarbageCollection>
